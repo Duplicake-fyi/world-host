@@ -256,14 +256,6 @@ dependencies {
         }
     }
 
-    if (mcVersion >= 1_20_04 && mcVersion < 1_21_11 && isFabric) {
-        modCompileOnly(
-            "de.florianmichael:viafabricplus:3.0.2"
-        ) {
-            isTransitive = false
-        }
-    }
-
     compileOnly("de.maxhenkel.voicechat:voicechat-api:2.5.0")
     when (mcVersion) {
         1_21_11 -> null
