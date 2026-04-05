@@ -305,13 +305,13 @@ modrinth {
     token.set(project.properties["modrinth.token"] as String? ?: System.getenv("MODRINTH_TOKEN"))
     projectId.set(if (isStaging) "world-host-staging" else "world-host")
     versionNumber.set(version.toString())
-    val loaderName = when {
+    val loaderDisplayName = when {
         isFabric -> "Fabric"
         isForge -> "Forge"
         isNeoForge -> "NeoForge"
         else -> throw IllegalStateException()
     }
-    versionName.set("[$loaderName $mcVersionString] World Host $modVersion")
+    versionName.set("[$loaderDisplayName $mcVersionString] World Host $modVersion")
     uploadFile.set(tasks.named("remapJar"))
     additionalFiles.add(tasks.named("sourcesJar"))
     gameVersions.add(mcVersionString)
@@ -324,7 +324,7 @@ modrinth {
         1_21_11 -> "1.21.10"
         else -> null
     }?.let(gameVersions::add)
-    loaders.add(this@Version_gradle.loaderName)
+    loaders.add(loaderName)
     dependencies {
         if (isFabric) {
             optional.project("modmenu")
