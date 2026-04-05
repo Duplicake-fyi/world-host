@@ -100,7 +100,7 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-//#if MC >= 1.21.11
+//#if MC >= 12111
 //$$ import net.minecraft.resources.Identifier;
 //#else
 import net.minecraft.resources.ResourceLocation;
@@ -729,7 +729,7 @@ public class WorldHost
     }
 
     public static
-        //#if MC >= 1.21.11
+        //#if MC >= 12111
         //$$ Identifier
         //#else
         ResourceLocation

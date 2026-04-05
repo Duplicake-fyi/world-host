@@ -4,7 +4,7 @@ import com.mojang.authlib.GameProfile;
 import net.minecraft.client.resources.SkinManager;
 import org.jetbrains.annotations.Nullable;
 
-//#if MC >= 1.21.11
+//#if MC >= 12111
 //$$ import net.minecraft.resources.Identifier;
 //#else
 import net.minecraft.resources.ResourceLocation;
@@ -22,7 +22,7 @@ import net.minecraft.client.resources.PlayerSkin;
 
 // TODO: Remove in 1.20.2+
 public record WHPlayerSkin(
-    //#if MC >= 1.21.11
+    //#if MC >= 12111
     //$$ Identifier texture,
     //$$ @Nullable Identifier capeTexture,
     //#else

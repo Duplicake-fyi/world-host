@@ -55,7 +55,7 @@ import net.minecraft.client.gui.GuiGraphics;
 //$$ import com.mojang.blaze3d.vertex.PoseStack;
 //#endif
 
-//#if MC >= 1.21.11
+//#if MC >= 12111
 //$$ import net.minecraft.resources.Identifier;
 //#else
 import net.minecraft.resources.ResourceLocation;
@@ -71,21 +71,21 @@ import net.minecraft.client.gui.components.Tooltip;
 public class OnlineFriendsScreen extends ScreenWithInfoTexts implements FriendsListUpdate {
     //#if MC >= 1.20.2
     private static final
-        //#if MC >= 1.21.11
+        //#if MC >= 12111
         //$$ Identifier
         //#else
         ResourceLocation
         //#endif
         INCOMPATIBLE_SPRITE = ResourceLocations.minecraft("server_list/incompatible");
     private static final
-        //#if MC >= 1.21.11
+        //#if MC >= 12111
         //$$ Identifier
         //#else
         ResourceLocation
         //#endif
         JOIN_HIGHLIGHTED_SPRITE = ResourceLocations.minecraft("server_list/join_highlighted");
     private static final
-        //#if MC >= 1.21.11
+        //#if MC >= 12111
         //$$ Identifier
         //#else
         ResourceLocation
@@ -365,7 +365,7 @@ public class OnlineFriendsScreen extends ScreenWithInfoTexts implements FriendsL
         private boolean joinable;
 
         private final
-            //#if MC >= 1.21.11
+            //#if MC >= 12111
             //$$ Identifier
             //#else
             ResourceLocation

@@ -11,7 +11,7 @@ import net.minecraft.client.gui.GuiGraphics;
 //$$ import com.mojang.blaze3d.vertex.PoseStack;
 //#endif
 
-//#if MC >= 1.21.11
+//#if MC >= 12111
 //$$ import net.minecraft.resources.Identifier;
 //#else
 import net.minecraft.resources.ResourceLocation;
@@ -30,7 +30,7 @@ public interface IconRenderer {
     );
 
     static IconRenderer createSkinIconRenderer(
-        //#if MC >= 1.21.11
+        //#if MC >= 12111
         //$$ Supplier<Identifier> skinTexture
         //#else
         Supplier<ResourceLocation> skinTexture

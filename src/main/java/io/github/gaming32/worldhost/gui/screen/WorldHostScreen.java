@@ -27,7 +27,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.RenderType;
 //#endif
 
-//#if MC >= 1.21.11
+//#if MC >= 12111
 //$$ import net.minecraft.resources.Identifier;
 //#else
 import net.minecraft.resources.ResourceLocation;
@@ -155,7 +155,7 @@ public abstract class WorldHostScreen extends Screen {
         //#else
         GuiGraphics context,
         //#endif
-        //#if MC >= 1.21.11
+        //#if MC >= 12111
         //$$ Identifier texture,
         //#else
         ResourceLocation texture,
@@ -194,7 +194,7 @@ public abstract class WorldHostScreen extends Screen {
         //#else
         GuiGraphics context,
         //#endif
-        //#if MC >= 1.21.11
+        //#if MC >= 12111
         //$$ Identifier texture,
         //#else
         ResourceLocation texture,
@@ -223,7 +223,7 @@ public abstract class WorldHostScreen extends Screen {
     //#if MC >= 1.20.2
     public static void blitSprite(
         GuiGraphics graphics,
-        //#if MC >= 1.21.11
+        //#if MC >= 12111
         //$$ Identifier sprite,
         //#else
         ResourceLocation sprite,

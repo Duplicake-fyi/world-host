@@ -46,7 +46,7 @@
     //?? "minecraft": ">=1.21.0 <1.21.2",
     //#elseif MC == 1.21.3
     //?? "minecraft": ">=1.21.2 <1.21.4",
-    //#elseif MC == 1.21.11
+    //#elseif MC == 12111
     //?? "minecraft": "1.21.11",
     //#else
     "minecraft": "$mc_version",

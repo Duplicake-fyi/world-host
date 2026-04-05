@@ -32,7 +32,7 @@ modId = "minecraft"
 #?? versionRange = "[1.21.0,1.21.2)"
 ##elseif MC == 1.21.3
 #?? versionRange = "[1.21.2,1.21.4)"
-##elseif MC == 1.21.11
+##elseif MC == 12111
 #?? versionRange = "[1.21.11]"
 ##else
 versionRange = "[$mc_version]"
