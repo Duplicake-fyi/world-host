@@ -14,7 +14,6 @@ import net.minecraft.client.gui.screens.ConnectScreen;
 import net.minecraft.client.gui.screens.DisconnectedScreen;
 import net.minecraft.client.gui.screens.LevelLoadingScreen;
 import net.minecraft.client.gui.screens.PauseScreen;
-import net.minecraft.client.gui.screens.ReceivingLevelScreen;
 import net.minecraft.client.gui.screens.ShareToLanScreen;
 import net.minecraft.client.gui.screens.TitleScreen;
 import net.minecraft.client.gui.screens.multiplayer.JoinMultiplayerScreen;
@@ -47,7 +46,7 @@ public class WorldHostTesting {
             .maybe(SafetyScreen.class, () -> click(findWidgetByTranslation("gui.proceed")))
             .maybe(SelectWorldScreen.class, () -> click(findWidgetByTranslation("world-host.create_world")))
             .then(CreateWorldScreen.class, () -> click(findWidgetByTranslation("selectWorld.create")))
-            .skip(LevelLoadingScreen.class, ReceivingLevelScreen.class)
+            .skip(LevelLoadingScreen.class)
             .then(null, () -> press(InputConstants.KEY_ESCAPE))
             .then(PauseScreen.class, () -> click(findWidgetByTranslation("world-host.online_status")))
             .then(addFriend(TestingUser.JOINER))
@@ -103,7 +102,7 @@ public class WorldHostTesting {
                 //#endif
                 throw new IllegalStateException("Unexpected disconnect trying to join server: " + reason.getString());
             })
-            .skip(ReceivingLevelScreen.class);
+            ;
     }
 
     private static void waitForHostToHost(long timeSpent) {

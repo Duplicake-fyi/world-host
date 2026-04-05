@@ -53,24 +53,18 @@ public final class FriendsButton extends Button implements FriendsListUpdate {
     //#endif
 
     @Override
-    //#if MC >= 1.19.4
-    public void renderString(
-        @NotNull
-        //#if MC < 1.20.0
-        //$$ PoseStack context,
-        //#else
-        GuiGraphics context,
-        //#endif
-        @NotNull Font font, int i
-    ) {
-    //#else
-    //$$ protected void renderBg(@NotNull PoseStack context, @NotNull Minecraft minecraft, int mouseX, int mouseY) {
-    //#endif
+    protected void renderContents(@NotNull GuiGraphics context, int mouseX, int mouseY, float partialTick) {
+        final Font font = Minecraft.getInstance().font;
         final int baseX = getX() + bgX;
         final int baseY = getY() + (height - 12) / 2;
         WorldHostScreen.fill(context, baseX, baseY, baseX + bgWidth, baseY + 12, 0x80000000);
-        //#if MC >= 1.19.4
-        super.renderString(context, font, i);
-        //#endif
+        WorldHostScreen.drawCenteredString(
+            context,
+            font,
+            getMessage(),
+            getX() + width / 2,
+            getY() + (height - font.lineHeight) / 2,
+            active ? 0xffffff : 0xa0a0a0
+        );
     }
 }

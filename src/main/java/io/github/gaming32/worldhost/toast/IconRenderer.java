@@ -11,11 +11,7 @@ import net.minecraft.client.gui.GuiGraphics;
 //$$ import com.mojang.blaze3d.vertex.PoseStack;
 //#endif
 
-//#if MC >= 12111
-//$$ import net.minecraft.resources.Identifier;
-//#else
-import net.minecraft.resources.ResourceLocation;
-//#endif
+import net.minecraft.resources.Identifier;
 
 @FunctionalInterface
 public interface IconRenderer {
@@ -29,13 +25,7 @@ public interface IconRenderer {
         int x, int y, int width, int height
     );
 
-    static IconRenderer createSkinIconRenderer(
-        //#if MC >= 12111
-        //$$ Supplier<Identifier> skinTexture
-        //#else
-        Supplier<ResourceLocation> skinTexture
-        //#endif
-    ) {
+    static IconRenderer createSkinIconRenderer(Supplier<Identifier> skinTexture) {
         return (context, x, y, width, height) -> {
             final var texture = skinTexture.get();
             WorldHostRenderSystem.enableBlend();

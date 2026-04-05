@@ -1,49 +1,21 @@
 package io.github.gaming32.worldhost;
 
-//#if MC >= 12111
-//$$ import net.minecraft.resources.Identifier;
-//#else
-import net.minecraft.resources.ResourceLocation;
-//#endif
+import net.minecraft.resources.Identifier;
 
 public final class ResourceLocations {
     private static final String WORLD_HOST_NAMESPACE = "world-host";
     //#if MC >= 1.19.4
-    private static final
-        //#if MC >= 12111
-        //$$ Identifier
-        //#else
-        ResourceLocation
-        //#endif
-        WORLD_HOST_TEMPLATE = namespaced(WORLD_HOST_NAMESPACE, "");
+    private static final Identifier WORLD_HOST_TEMPLATE = namespaced(WORLD_HOST_NAMESPACE, "");
     //#endif
 
     private ResourceLocations() {
     }
 
-    public static
-        //#if MC >= 12111
-        //$$ Identifier
-        //#else
-        ResourceLocation
-        //#endif
-        minecraft(String path) {
-        //#if MC >= 12111
-        //$$ return Identifier.withDefaultNamespace(path);
-        //#elseif MC >= 1.21
-        return ResourceLocation.withDefaultNamespace(path);
-        //#else
-        //$$ return new ResourceLocation(ResourceLocation.DEFAULT_NAMESPACE, path);
-        //#endif
+    public static Identifier minecraft(String path) {
+        return Identifier.withDefaultNamespace(path);
     }
 
-    public static
-        //#if MC >= 12111
-        //$$ Identifier
-        //#else
-        ResourceLocation
-        //#endif
-        worldHost(String path) {
+    public static Identifier worldHost(String path) {
         //#if MC >= 1.19.4
         return WORLD_HOST_TEMPLATE.withPath(path);
         //#else
@@ -51,19 +23,7 @@ public final class ResourceLocations {
         //#endif
     }
 
-    public static
-        //#if MC >= 12111
-        //$$ Identifier
-        //#else
-        ResourceLocation
-        //#endif
-        namespaced(String namespace, String path) {
-        //#if MC >= 12111
-        //$$ return Identifier.fromNamespaceAndPath(namespace, path);
-        //#elseif MC >= 1.21
-        return ResourceLocation.fromNamespaceAndPath(namespace, path);
-        //#else
-        //$$ return new ResourceLocation(namespace, path);
-        //#endif
+    public static Identifier namespaced(String namespace, String path) {
+        return Identifier.of(namespace, path);
     }
 }

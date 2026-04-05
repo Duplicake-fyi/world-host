@@ -25,7 +25,7 @@ public class MixinWorldSelectionList_WorldListEntry {
                 WorldHost.shareWorldOnLoad = true;
             } else {
                 WorldHost.shareWorldOnLoad = InputConstants.isKeyDown(
-                    minecraft.getWindow().getWindow(), InputConstants.KEY_LSHIFT
+                    minecraft.getWindow().window(), InputConstants.KEY_LSHIFT
                 );
             }
         } else {

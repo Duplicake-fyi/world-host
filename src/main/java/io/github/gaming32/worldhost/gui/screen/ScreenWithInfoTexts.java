@@ -61,9 +61,9 @@ public abstract class ScreenWithInfoTexts extends WorldHostScreen {
             final int textX = width / 2 - textWidth / 2;
             if (mouseX >= textX && mouseX <= textX + textWidth) {
                 if (mouseY >= textY && mouseY <= textY + font.lineHeight) {
-                    final Style style = font.getSplitter().getStyleAt(line, (int)Math.round(mouseX) - textX);
+                    final Style style = font.getSplitter().componentStyleAtWidth(line.getVisualOrderText(), (int)Math.round(mouseX) - textX);
                     if (style != null) {
-                        handleComponentClicked(style);
+                        super.handleComponentClicked(style);
                         return true;
                     }
                 }

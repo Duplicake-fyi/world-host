@@ -1,8 +1,8 @@
 package io.github.gaming32.worldhost.gui.screen;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-import io.github.gaming32.worldhost.versions.ButtonBuilder;
 import com.mojang.blaze3d.pipeline.RenderPipeline;
+import io.github.gaming32.worldhost.versions.ButtonBuilder;
+import org.joml.Matrix3x2fStack;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.components.AbstractSelectionList;
 import net.minecraft.client.gui.components.Button;
@@ -28,11 +28,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.RenderPipelines;
 //#endif
 
-//#if MC >= 12111
-//$$ import net.minecraft.resources.Identifier;
-//#else
-import net.minecraft.resources.ResourceLocation;
-//#endif
+import net.minecraft.resources.Identifier;
 
 import net.minecraft.util.FormattedCharSequence;
 
@@ -110,19 +106,7 @@ public abstract class WorldHostScreen extends Screen {
         //#endif
         @NotNull List<Component> tooltips, int mouseX, int mouseY
     ) {
-        //#if MC >= 1.20.0
-        context.renderTooltip
-        //#else
-        //$$ super.renderTooltip
-        //#endif
-            (
-                //#if MC < 1.20.0
-                //$$ context,
-                //#else
-                font,
-                //#endif
-                tooltips, mouseX, mouseY
-            );
+        super.renderTooltip(context, tooltips, mouseX, mouseY);
     }
 
     public static void drawString(
@@ -156,11 +140,7 @@ public abstract class WorldHostScreen extends Screen {
         //#else
         GuiGraphics context,
         //#endif
-        //#if MC >= 12111
-        //$$ Identifier texture,
-        //#else
-        ResourceLocation texture,
-        //#endif
+        Identifier texture,
         int x, int y, float uOffset, float vOffset, int width, int height, int uWidth, int vHeight, int textureWidth, int textureHeight
     ) {
         //#if MC >= 1.20.0
@@ -195,11 +175,7 @@ public abstract class WorldHostScreen extends Screen {
         //#else
         GuiGraphics context,
         //#endif
-        //#if MC >= 12111
-        //$$ Identifier texture,
-        //#else
-        ResourceLocation texture,
-        //#endif
+        Identifier texture,
         int x, int y, float uOffset, float vOffset, int width, int height, int textureWidth, int textureHeight
     ) {
         //#if MC >= 1.20.0
@@ -224,11 +200,7 @@ public abstract class WorldHostScreen extends Screen {
     //#if MC >= 1.20.2
     public static void blitSprite(
         GuiGraphics graphics,
-        //#if MC >= 12111
-        //$$ Identifier sprite,
-        //#else
-        ResourceLocation sprite,
-        //#endif
+        Identifier sprite,
         int x, int y, int width, int height
     ) {
         graphics.blitSprite(
@@ -321,7 +293,7 @@ public abstract class WorldHostScreen extends Screen {
         );
     }
 
-    public static PoseStack pose(
+    public static Matrix3x2fStack pose(
         @NotNull
         //#if MC < 1.20.0
         //$$ PoseStack context

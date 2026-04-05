@@ -41,11 +41,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-//#if MC >= 1.20.4 && FABRIC && 0
-import de.florianmichael.viafabricplus.screen.base.ProtocolSelectionScreen;
-import de.florianmichael.viafabricplus.settings.impl.GeneralSettings;
-//#endif
-
 //#if MC < 1.21.2
 //$$ import com.mojang.blaze3d.systems.RenderSystem;
 //#endif
@@ -56,11 +51,7 @@ import net.minecraft.client.gui.GuiGraphics;
 //$$ import com.mojang.blaze3d.vertex.PoseStack;
 //#endif
 
-//#if MC >= 12111
-//$$ import net.minecraft.resources.Identifier;
-//#else
-import net.minecraft.resources.ResourceLocation;
-//#endif
+import net.minecraft.resources.Identifier;
 
 //#if MC >= 1.19.4
 import java.util.Arrays;
@@ -72,25 +63,13 @@ import net.minecraft.client.gui.components.Tooltip;
 public class OnlineFriendsScreen extends ScreenWithInfoTexts implements FriendsListUpdate {
     //#if MC >= 1.20.2
     private static final
-        //#if MC >= 12111
-        //$$ Identifier
-        //#else
-        ResourceLocation
-        //#endif
+        Identifier
         INCOMPATIBLE_SPRITE = ResourceLocations.minecraft("server_list/incompatible");
     private static final
-        //#if MC >= 12111
-        //$$ Identifier
-        //#else
-        ResourceLocation
-        //#endif
+        Identifier
         JOIN_HIGHLIGHTED_SPRITE = ResourceLocations.minecraft("server_list/join_highlighted");
     private static final
-        //#if MC >= 12111
-        //$$ Identifier
-        //#else
-        ResourceLocation
-        //#endif
+        Identifier
         JOIN_SPRITE = ResourceLocations.minecraft("server_list/join");
     //#else
     //$$ private static final ResourceLocation GUI_ICONS_LOCATION = ResourceLocations.minecraft("textures/gui/icons.png");
@@ -172,20 +151,6 @@ public class OnlineFriendsScreen extends ScreenWithInfoTexts implements FriendsL
         }
         //#endif
     }
-
-    //#if MC >= 1.20.4 && FABRIC && 0
-    // Based on https://github.com/ViaVersion/ViaFabricPlus/blob/main/src/main/java/de/florianmichael/viafabricplus/injection/mixin/base/integration/MixinMultiplayerScreen.java
-    private void vfpInit() {
-        Button.Builder builder = Button.builder(
-            Component.literal("ViaFabricPlus"),
-            button -> ProtocolSelectionScreen.INSTANCE.open(this)
-        ).size(98, 20);
-        builder = GeneralSettings.withOrientation(
-            builder, GeneralSettings.global().multiplayerScreenButtonOrientation.getIndex(), width, height
-        );
-        addRenderableWidget(builder.build());
-    }
-    //#endif
 
     @Override
     public void removed() {
@@ -275,7 +240,7 @@ public class OnlineFriendsScreen extends ScreenWithInfoTexts implements FriendsL
             if (friends.containsKey(uuid)) {
                 friendsToAdd.remove(uuid);
             } else {
-                list.remove(i);
+                list.removeEntry(i);
             }
         }
 
@@ -301,12 +266,6 @@ public class OnlineFriendsScreen extends ScreenWithInfoTexts implements FriendsL
                 //#endif
                 36
             );
-        }
-
-        @Nullable
-        @Override
-        protected OnlineFriendsListEntry remove(int index) {
-            return super.remove(index);
         }
 
         @Override
@@ -344,7 +303,7 @@ public class OnlineFriendsScreen extends ScreenWithInfoTexts implements FriendsL
         }
 
         public int getItemHeight() {
-            return itemHeight;
+            return 36;
         }
     }
 
@@ -363,16 +322,10 @@ public class OnlineFriendsScreen extends ScreenWithInfoTexts implements FriendsL
 
         private Component displayName;
         @Nullable
-        private List<FormattedCharSequence> joinabilityTooltip;
+        private List<Component> joinabilityTooltip;
         private boolean joinable;
 
-        private final
-            //#if MC >= 12111
-            //$$ Identifier
-            //#else
-            ResourceLocation
-            //#endif
-            iconTextureId;
+        private final Identifier iconTextureId;
         //#if MC >= 1.19.4
         private byte[] iconData;
         //#else
@@ -416,7 +369,7 @@ public class OnlineFriendsScreen extends ScreenWithInfoTexts implements FriendsL
             int x, int y, boolean hovered, float tickDelta
         ) {
             final int entryWidth = OnlineFriendsScreen.this.list.getRowWidth();
-            final boolean incompatibleVersion = serverInfo.protocol != SharedConstants.getCurrentVersion().getProtocolVersion();
+            final boolean incompatibleVersion = serverInfo.protocol != SharedConstants.getCurrentVersion().protocolVersion();
             WorldHostScreen.drawString(context, font, displayName, x + 35, y + 1, 0xffffff, false);
 
             final var lines = font.split(serverInfo.motd, entryWidth - 34);
@@ -472,7 +425,7 @@ public class OnlineFriendsScreen extends ScreenWithInfoTexts implements FriendsL
             }
 
             if (joinabilityTooltip != null && hovered) {
-                tooltip = joinability.reason().map(List::of).orElse(null);
+                tooltip = joinabilityTooltip;
             }
 
             final boolean touchscreen = minecraft.options.touchscreen().get();
@@ -518,7 +471,7 @@ public class OnlineFriendsScreen extends ScreenWithInfoTexts implements FriendsL
                 if (!players.sample().isEmpty()) {
                     final List<Component> playerList = new ArrayList<>(players.sample().size());
 
-                    for(GameProfile gameProfile : players.sample()) {
+                    for (final var gameProfile : players.sample()) {
                         playerList.add(Component.literal(gameProfile.name()));
                     }
 
@@ -607,7 +560,7 @@ public class OnlineFriendsScreen extends ScreenWithInfoTexts implements FriendsL
             displayName = newDisplayName;
 
             joinabilityTooltip = joinability.reason()
-                .map(text -> font.split(text, 170))
+                .map(List::of)
                 .orElse(null);
             joinable = joinability.canJoin();
         }

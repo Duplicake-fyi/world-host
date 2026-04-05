@@ -1,7 +1,6 @@
 package io.github.gaming32.worldhost.toast;
 
 import com.demonwav.mcdev.annotations.Translatable;
-import com.mojang.blaze3d.vertex.PoseStack;
 import io.github.gaming32.worldhost.ResourceLocations;
 import io.github.gaming32.worldhost.gui.screen.WorldHostScreen;
 import io.github.gaming32.worldhost.testing.WorldHostTesting;
@@ -109,7 +108,7 @@ public class WHToast {
     ) {
         if (!ready) return;
 
-        final PoseStack poseStack = WorldHostScreen.pose(context);
+        final var poseStack = WorldHostScreen.pose(context);
         poseStack.pushPose();
         poseStack.translate(0f, 0f, 100f);
 

@@ -1,65 +1,38 @@
 package io.github.gaming32.worldhost;
 
 import com.mojang.authlib.GameProfile;
+import com.mojang.authlib.minecraft.MinecraftProfileTexture;
 import net.minecraft.client.resources.SkinManager;
+import net.minecraft.client.resources.DefaultPlayerSkin;
+import net.minecraft.core.UUIDUtil;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.Nullable;
-
-//#if MC >= 12111
-//$$ import net.minecraft.resources.Identifier;
-//#else
-import net.minecraft.resources.ResourceLocation;
-//#endif
-
-//#if MC >= 1.20.2
-import net.minecraft.client.resources.PlayerSkin;
-//#else
-//$$ import com.mojang.authlib.minecraft.MinecraftProfileTexture;
-//$$ import java.util.UUID;
-//$$ import java.util.concurrent.CompletableFuture;
-//$$ import net.minecraft.client.resources.DefaultPlayerSkin;
-//$$ import net.minecraft.core.UUIDUtil;
-//#endif
 
 // TODO: Remove in 1.20.2+
 public record WHPlayerSkin(
-    //#if MC >= 12111
-    //$$ Identifier texture,
-    //$$ @Nullable Identifier capeTexture,
-    //#else
-    ResourceLocation texture,
-    @Nullable ResourceLocation capeTexture,
-    //#endif
+    Identifier texture,
+    @Nullable Identifier capeTexture,
     Model model
 ) {
-    //#if MC >= 1.20.2
-    public static WHPlayerSkin fromPlayerSkin(PlayerSkin skin) {
-        return new WHPlayerSkin(skin.texture(), skin.capeTexture(), Model.byName(skin.model().id()));
-    }
-    //#endif
-
     public static WHPlayerSkin fromSkinManager(SkinManager skinManager, GameProfile profile) {
-        //#if MC >= 1.20.2
-        return fromPlayerSkin(skinManager.getInsecureSkin(profile));
-        //#else
-        //$$ final var map = skinManager.getInsecureSkinInformation(profile);
-        //$$ final MinecraftProfileTexture skin = map.get(MinecraftProfileTexture.Type.SKIN);
-        //$$ final ResourceLocation skinTexture;
-        //$$ final String skinModel;
-        //$$ if (skin != null) {
-        //$$     skinTexture = skinManager.registerTexture(skin, MinecraftProfileTexture.Type.SKIN);
-        //$$     skinModel = skin.getMetadata("model");
-        //$$ } else {
-        //$$     final UUID uuid = UUIDUtil.getOrCreatePlayerUUID(profile);
-        //$$     skinTexture = DefaultPlayerSkin.getDefaultSkin(uuid);
-        //$$     skinModel = DefaultPlayerSkin.getSkinModelName(uuid);
-        //$$ }
-        //$$ final MinecraftProfileTexture cape = map.get(MinecraftProfileTexture.Type.CAPE);
-        //$$ return new WHPlayerSkin(
-        //$$     skinTexture,
-        //$$     cape != null ? skinManager.registerTexture(cape, MinecraftProfileTexture.Type.CAPE) : null,
-        //$$     Model.byName(skinModel)
-        //$$ );
-        //#endif
+        final var map = skinManager.getInsecureSkinInformation(profile);
+        final MinecraftProfileTexture skin = map.get(MinecraftProfileTexture.Type.SKIN);
+        final Identifier skinTexture;
+        final String skinModel;
+        if (skin != null) {
+            skinTexture = skinManager.registerTexture(skin, MinecraftProfileTexture.Type.SKIN);
+            skinModel = skin.getMetadata("model");
+        } else {
+            final var uuid = UUIDUtil.getOrCreatePlayerUUID(profile);
+            skinTexture = DefaultPlayerSkin.get(uuid);
+            skinModel = DefaultPlayerSkin.getSkinModelName(uuid);
+        }
+        final MinecraftProfileTexture cape = map.get(MinecraftProfileTexture.Type.CAPE);
+        return new WHPlayerSkin(
+            skinTexture,
+            cape != null ? skinManager.registerTexture(cape, MinecraftProfileTexture.Type.CAPE) : null,
+            Model.byName(skinModel)
+        );
     }
 
     public enum Model {

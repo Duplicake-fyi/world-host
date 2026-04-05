@@ -37,22 +37,22 @@ public class MinecraftApi {
     public static void click(double x, double y, int button) {
         final Window window = Minecraft.getInstance().getWindow();
         WindowCallbackManager.cursorPosCallback.invoke(
-            window.getWindow(),
+            window.window(),
             x * window.getScreenWidth() / window.getGuiScaledWidth(),
             y * window.getScreenHeight() / window.getGuiScaledHeight()
         );
-        WindowCallbackManager.mouseButtonCallback.invoke(window.getWindow(), button, InputConstants.PRESS, 0);
-        WindowCallbackManager.mouseButtonCallback.invoke(window.getWindow(), button, InputConstants.RELEASE, 0);
+        WindowCallbackManager.mouseButtonCallback.invoke(window.window(), button, InputConstants.PRESS, 0);
+        WindowCallbackManager.mouseButtonCallback.invoke(window.window(), button, InputConstants.RELEASE, 0);
     }
 
     public static void press(int keycode) {
-        final long window = Minecraft.getInstance().getWindow().getWindow();
+        final long window = Minecraft.getInstance().getWindow().window();
         WindowCallbackManager.keyCallback.invoke(window, keycode, 0, InputConstants.PRESS, 0);
         WindowCallbackManager.keyCallback.invoke(window, keycode, 0, InputConstants.RELEASE, 0);
     }
 
     public static void type(String message) {
-        final long window = Minecraft.getInstance().getWindow().getWindow();
+        final long window = Minecraft.getInstance().getWindow().window();
         message.codePoints().forEach(cp -> WindowCallbackManager.charModsCallback.invoke(window, cp, 0));
     }
 

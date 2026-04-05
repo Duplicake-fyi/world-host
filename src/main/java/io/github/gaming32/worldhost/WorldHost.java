@@ -39,8 +39,6 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntAVLTreeMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import net.minecraft.ChatFormatting;
-import net.minecraft.util.ApiServices;
-import net.minecraft.util.UserCache;
 import net.minecraft.util.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.ConnectScreen;
@@ -55,6 +53,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentUtils;
 import net.minecraft.network.protocol.status.ClientboundStatusResponsePacket;
 import net.minecraft.network.protocol.status.ServerStatus;
+import net.minecraft.server.players.GameProfileCache;
 import org.apache.commons.io.function.IOConsumer;
 import org.apache.commons.io.function.IOFunction;
 import org.apache.commons.lang3.StringUtils;
@@ -99,11 +98,7 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-//#if MC >= 12111
-//$$ import net.minecraft.resources.Identifier;
-//#else
-import net.minecraft.resources.ResourceLocation;
-//#endif
+import net.minecraft.resources.Identifier;
 
 import static net.minecraft.commands.Commands.literal;
 
@@ -221,7 +216,7 @@ public class WorldHost
     @Nullable
     public static Gateway upnpGateway;
 
-    private static UserCache profileCache;
+    private static GameProfileCache profileCache;
 
     @Nullable
     public static ProtocolClient protoClient;
@@ -328,12 +323,11 @@ public class WorldHost
         } catch (IOException e) {
             LOGGER.error("Failed to create cache directory", e);
         }
-        final ApiServices services = Minecraft.getInstance().services();
-        profileCache = new UserCache(
-            services.profileRepository(),
+        profileCache = new GameProfileCache(
+            ((MinecraftAccessor)Minecraft.getInstance()).getAuthenticationService().createProfileRepository(),
             CACHE_DIR.resolve("usercache.json").toFile()
         );
-        profileCache.setOfflineMode(false);
+        profileCache.setExecutor(Minecraft.getInstance());
 
         plugins = ImmutableList.sortedCopyOf(collectPlugins());
         LOGGER.info(
@@ -720,7 +714,7 @@ public class WorldHost
         proxyProtocolClient = null;
     }
 
-    public static UserCache getProfileCache() {
+    public static GameProfileCache getProfileCache() {
         return profileCache;
     }
 
@@ -728,19 +722,12 @@ public class WorldHost
         return WHPlayerSkin.fromSkinManager(Minecraft.getInstance().getSkinManager(), profile);
     }
 
-    public static
-        //#if MC >= 12111
-        //$$ Identifier
-        //#else
-        ResourceLocation
-        //#endif
-        getSkinLocationNow(GameProfile profile) {
+    public static Identifier getSkinLocationNow(GameProfile profile) {
         return getInsecureSkin(profile).texture();
     }
 
-    public static void getMaybeAsync(UserCache cache, String name, Consumer<Optional<GameProfile>> action) {
-        CompletableFuture.supplyAsync(() -> cache.findByName(name).map(player -> new GameProfile(player.id(), player.name())), Util.ioPool())
-            .thenAccept(action);
+    public static void getMaybeAsync(GameProfileCache cache, String name, Consumer<Optional<GameProfile>> action) {
+        cache.getAsync(name).thenAccept(action);
     }
 
     public static GameProfile fetchProfile(MinecraftSessionService sessionService, UUID uuid, @Nullable GameProfile fallback) {
@@ -768,7 +755,7 @@ public class WorldHost
             return CompletableFuture.completedFuture(profile);
         }
         return CompletableFuture.supplyAsync(
-            () -> WorldHost.fetchProfile(Minecraft.getInstance().getSessionService(), profile),
+            () -> WorldHost.fetchProfile(Minecraft.getInstance().getMinecraftSessionService(), profile),
             //#if MC >= 1.20.4
             Util.nonCriticalIoPool()
             //#else

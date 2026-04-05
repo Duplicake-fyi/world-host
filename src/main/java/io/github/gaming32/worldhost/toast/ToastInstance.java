@@ -1,6 +1,5 @@
 package io.github.gaming32.worldhost.toast;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import io.github.gaming32.worldhost.gui.screen.WorldHostScreen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -102,7 +101,7 @@ class ToastInstance {
         //#endif
         float x, float y, int mouseX, int mouseY, float tickDelta
     ) {
-        final PoseStack poseStack = WorldHostScreen.pose(context);
+        final var poseStack = WorldHostScreen.pose(context);
 
         final float originalX = x;
 
@@ -181,7 +180,7 @@ class ToastInstance {
         //#endif
         float minX, float minY, float maxX, float maxY, int color
     ) {
-        final PoseStack poseStack = WorldHostScreen.pose(context);
+        final var poseStack = WorldHostScreen.pose(context);
         poseStack.pushPose();
         poseStack.translate(minX, minY, 0f);
         poseStack.scale(maxX - minX, maxY - minY, 1f);
