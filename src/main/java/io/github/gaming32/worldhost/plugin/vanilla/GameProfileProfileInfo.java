@@ -14,9 +14,9 @@ public final class GameProfileProfileInfo implements ProfileInfo {
 
     @Override
     public String name() {
-        return !profile.getName().isBlank()
-            ? profile.getName()
-            : profile.getId().toString();
+        return !profile.name().isBlank()
+            ? profile.name()
+            : profile.id().toString();
     }
 
     @Override

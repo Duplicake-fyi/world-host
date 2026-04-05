@@ -297,7 +297,7 @@ public final class ProtocolClient implements AutoCloseable, ProxyPassthrough {
         String authenticationToken, String serverId
     ) {
         try {
-            Minecraft.getInstance().getMinecraftSessionService().joinServer(profile, authenticationToken, serverId);
+            Minecraft.getInstance().getSessionService().joinServer(profile, authenticationToken, serverId);
             return null;
         } catch (AuthenticationUnavailableException e) {
             return null;

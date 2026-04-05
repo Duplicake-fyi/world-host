@@ -17,7 +17,9 @@ import io.github.gaming32.worldhost.mixin.ServerStatusPingerAccessor;
 import io.github.gaming32.worldhost.versions.WorldHostRenderSystem;
 import net.minecraft.ChatFormatting;
 import net.minecraft.SharedConstants;
-import net.minecraft.Util;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.util.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.ObjectSelectionList;
@@ -28,7 +30,6 @@ import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.util.FormattedCharSequence;
 import org.apache.commons.lang3.Validate;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -100,7 +101,7 @@ public class OnlineFriendsScreen extends ScreenWithInfoTexts implements FriendsL
     private OnlineFriendsList list;
     private Button joinButton;
     @Nullable
-    private List<FormattedCharSequence> tooltip;
+    private List<Component> tooltip;
 
     public OnlineFriendsScreen(Screen parent) {
         super(Component.translatable("world-host.online_friends.title"), InfoTextsCategory.ONLINE_FRIENDS_SCREEN);
@@ -194,17 +195,18 @@ public class OnlineFriendsScreen extends ScreenWithInfoTexts implements FriendsL
     }
 
     @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (super.keyPressed(keyCode, scanCode, modifiers)) {
+    public boolean keyPressed(KeyEvent event) {
+        if (super.keyPressed(event)) {
             return true;
         }
+        final int keyCode = event.key();
         if (keyCode == GLFW.GLFW_KEY_F5) {
             WorldHost.refreshFriendsList();
             return true;
         }
         if (list.getSelected() != null) {
             if (keyCode != GLFW.GLFW_KEY_ENTER && keyCode != GLFW.GLFW_KEY_KP_ENTER) {
-                return list.keyPressed(keyCode, scanCode, modifiers);
+                return list.keyPressed(event);
             }
             connect();
             return true;
@@ -319,9 +321,9 @@ public class OnlineFriendsScreen extends ScreenWithInfoTexts implements FriendsL
         }
 
         @Override
-        public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        public boolean keyPressed(KeyEvent event) {
             final OnlineFriendsListEntry entry = getSelected();
-            return (entry != null && entry.keyPressed(keyCode, scanCode, modifiers)) || super.keyPressed(keyCode, scanCode, modifiers);
+            return (entry != null && entry.keyPressed(event)) || super.keyPressed(event);
         }
 
         //#if MC < 1.21.4
@@ -404,15 +406,16 @@ public class OnlineFriendsScreen extends ScreenWithInfoTexts implements FriendsL
         }
 
         @Override
-        public void render(
+        public void renderContent(
             @NotNull
             //#if MC < 1.20.0
             //$$ PoseStack context,
             //#else
             GuiGraphics context,
             //#endif
-            int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta
+            int x, int y, boolean hovered, float tickDelta
         ) {
+            final int entryWidth = OnlineFriendsScreen.this.list.getRowWidth();
             final boolean incompatibleVersion = serverInfo.protocol != SharedConstants.getCurrentVersion().getProtocolVersion();
             WorldHostScreen.drawString(context, font, displayName, x + 35, y + 1, 0xffffff, false);
 
@@ -468,19 +471,8 @@ public class OnlineFriendsScreen extends ScreenWithInfoTexts implements FriendsL
                 WorldHostRenderSystem.disableBlend();
             }
 
-            final int relX = mouseX - x;
-            final int relY = mouseY - y;
-            if (relX >= entryWidth - 15 && relX <= entryWidth - 5 && relY >= 0 && relY <= 8) {
-                if (incompatibleVersion) {
-                    tooltip = List.of(Component.translatable("multiplayer.status.incompatible").getVisualOrderText());
-                }
-            } else if (relX >= entryWidth - labelWidth - 17 && relX <= entryWidth - 17 && relY >= 0 && relY <= 8) {
-                tooltip = new ArrayList<>();
-                for (final Component line : serverInfo.playerList) {
-                    tooltip.add(line.getVisualOrderText());
-                }
-            } else if (joinabilityTooltip != null && hovered) {
-                tooltip = joinabilityTooltip;
+            if (joinabilityTooltip != null && hovered) {
+                tooltip = joinability.reason().map(List::of).orElse(null);
             }
 
             final boolean touchscreen = minecraft.options.touchscreen().get();
@@ -490,11 +482,7 @@ public class OnlineFriendsScreen extends ScreenWithInfoTexts implements FriendsL
                 //$$ RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
                 //#endif
                 //#if MC >= 1.20.2
-                if (relX < 32 && relX > 16) {
-                    blitSprite(context, JOIN_HIGHLIGHTED_SPRITE, x, y, 32, 32);
-                } else {
-                    blitSprite(context, JOIN_SPRITE, x, y, 32, 32);
-                }
+                blitSprite(context, JOIN_SPRITE, x, y, 32, 32);
                 //#else
                 //$$ if (relX < 32 && relX > 16) {
                 //$$     blit(context, GUI_SERVER_SELECTION_LOCATION, x, y, 0, 32, 32, 32, 256, 256);
@@ -531,7 +519,7 @@ public class OnlineFriendsScreen extends ScreenWithInfoTexts implements FriendsL
                     final List<Component> playerList = new ArrayList<>(players.sample().size());
 
                     for(GameProfile gameProfile : players.sample()) {
-                        playerList.add(Component.literal(gameProfile.getName()));
+                        playerList.add(Component.literal(gameProfile.name()));
                     }
 
                     if (players.sample().size() < players.online()) {
@@ -670,17 +658,17 @@ public class OnlineFriendsScreen extends ScreenWithInfoTexts implements FriendsL
         }
 
         @Override
-        public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
             select(this);
 
-            final double relX = mouseX - OnlineFriendsScreen.this.list.getRowLeft();
+            final double relX = event.x() - OnlineFriendsScreen.this.list.getRowLeft();
             if (relX < 32.0 && relX > 16.0) {
                 connect();
                 clickTime = Util.getMillis();
                 return true;
             }
 
-            if (Util.getMillis() - clickTime < 250L) {
+            if (doubleClick || Util.getMillis() - clickTime < 250L) {
                 connect();
             }
 

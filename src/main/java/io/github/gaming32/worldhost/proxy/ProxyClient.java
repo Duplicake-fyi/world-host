@@ -11,7 +11,6 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.local.LocalChannel;
-import net.minecraft.server.network.ServerConnectionListener;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -84,7 +83,7 @@ public final class ProxyClient extends SimpleChannelInboundHandler<ByteBuf> {
     public void start() {
         WorldHost.LOGGER.info("Starting proxy client from {}", remoteAddress);
         new Bootstrap()
-            .group(ServerConnectionListener.SERVER_EVENT_GROUP.get())
+            .group(ProxyChannels.LOCAL_EVENT_LOOP_GROUP)
             .handler(new ChannelInitializer<>() {
                 @Override
                 protected void initChannel(Channel ch) {

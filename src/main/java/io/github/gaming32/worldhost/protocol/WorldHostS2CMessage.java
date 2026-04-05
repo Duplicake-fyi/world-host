@@ -16,7 +16,7 @@ import io.github.gaming32.worldhost.protocol.proxy.ProxyProtocolClient;
 import io.github.gaming32.worldhost.protocol.punch.PunchManager;
 import io.github.gaming32.worldhost.protocol.punch.PunchReason;
 import io.github.gaming32.worldhost.toast.WHToast;
-import net.minecraft.Util;
+import net.minecraft.util.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.DisconnectedScreen;
 import net.minecraft.client.gui.screens.TitleScreen;

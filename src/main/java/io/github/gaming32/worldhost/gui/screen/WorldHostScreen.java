@@ -2,6 +2,7 @@ package io.github.gaming32.worldhost.gui.screen;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import io.github.gaming32.worldhost.versions.ButtonBuilder;
+import com.mojang.blaze3d.pipeline.RenderPipeline;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.components.AbstractSelectionList;
 import net.minecraft.client.gui.components.Button;
@@ -24,7 +25,7 @@ import net.minecraft.client.gui.GuiGraphics;
 //#endif
 
 //#if MC >= 1.21.2
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.RenderPipelines;
 //#endif
 
 //#if MC >= 12111
@@ -107,7 +108,7 @@ public abstract class WorldHostScreen extends Screen {
         //#else
         GuiGraphics context,
         //#endif
-        @NotNull List<? extends FormattedCharSequence> tooltips, int mouseX, int mouseY
+        @NotNull List<Component> tooltips, int mouseX, int mouseY
     ) {
         //#if MC >= 1.20.0
         context.renderTooltip
@@ -170,7 +171,7 @@ public abstract class WorldHostScreen extends Screen {
         //#endif
         blit(
             //#if MC >= 1.21.2
-            RenderType::guiTextured,
+            RenderPipelines.GUI_TEXTURED,
             //#endif
             //#if MC < 1.20.0
             //$$ context,
@@ -209,7 +210,7 @@ public abstract class WorldHostScreen extends Screen {
         //#endif
         blit(
             //#if MC >= 1.21.2
-            RenderType::guiTextured,
+            RenderPipelines.GUI_TEXTURED,
             //#endif
             //#if MC < 1.20.0
             //$$ context,
@@ -232,7 +233,7 @@ public abstract class WorldHostScreen extends Screen {
     ) {
         graphics.blitSprite(
             //#if MC >= 1.21.2
-            RenderType::guiTextured,
+            RenderPipelines.GUI_TEXTURED,
             //#endif
             sprite, x, y, width, height
         );
