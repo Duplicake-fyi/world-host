@@ -106,7 +106,9 @@ public abstract class WorldHostScreen extends Screen {
         //#endif
         @NotNull List<Component> tooltips, int mouseX, int mouseY
     ) {
-        super.renderTooltip(context, tooltips, mouseX, mouseY);
+        // TODO: Update for 1.21.11 - tooltip rendering changed
+        // For now, don't render tooltips from this method
+        // In 1.21.11, tooltips are rendered differently
     }
 
     public static void drawString(

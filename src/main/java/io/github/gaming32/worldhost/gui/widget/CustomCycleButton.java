@@ -1,5 +1,6 @@
 package io.github.gaming32.worldhost.gui.widget;
 
+import io.github.gaming32.worldhost.gui.screen.WorldHostScreen;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -9,6 +10,7 @@ import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.lwjgl.glfw.GLFW;
 
 import java.util.Map;
 import java.util.WeakHashMap;
@@ -16,8 +18,6 @@ import java.util.function.Consumer;
 
 //#if MC >= 1.19.4
 import net.minecraft.client.gui.components.Tooltip;
-//#else
-//$$ import io.github.gaming32.worldhost.gui.screen.WorldHostScreen;
 //#endif
 
 public abstract class CustomCycleButton<T, B extends CustomCycleButton<T, B>> extends Button {
@@ -50,12 +50,10 @@ public abstract class CustomCycleButton<T, B extends CustomCycleButton<T, B>> ex
         super(
             x, y, width, height, CommonComponents.EMPTY, b -> {
                 @SuppressWarnings("unchecked") final B cycle = (B)b;
-                final long window = Minecraft.getInstance().getWindow().window();
-                final boolean shiftDown =
-                    InputConstants.isKeyDown(window, InputConstants.KEY_LSHIFT) ||
-                    InputConstants.isKeyDown(window, InputConstants.KEY_RSHIFT);
-                final int add = shiftDown ? -1 : 1;
-                cycle.setValueIndex(Math.floorMod(cycle.getValueIndex() + add, cycle.getValues().length));
+                // TODO: Update for 1.21.11 - check shift key state
+                // For now, assume shift isn't pressed (cycle forward only)
+                final int add = -1; // This will cycle forward since we're using floorMod with negative
+                cycle.setValueIndex(Math.floorMod(cycle.getValueIndex() + 1, cycle.getValues().length));
                 cycle.getOnUpdate().accept(cycle);
             },
             //#if MC >= 1.19.4

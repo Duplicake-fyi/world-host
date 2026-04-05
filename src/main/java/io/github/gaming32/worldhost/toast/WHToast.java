@@ -109,8 +109,8 @@ public class WHToast {
         if (!ready) return;
 
         final var poseStack = WorldHostScreen.pose(context);
-        poseStack.pushPose();
-        poseStack.translate(0f, 0f, 100f);
+        poseStack.pushMatrix();
+        poseStack.translate(0f, 0f);
 
         final var window = Minecraft.getInstance().getWindow();
         final int screenWidth = window.getGuiScaledWidth();
@@ -125,7 +125,7 @@ public class WHToast {
             );
         }
 
-        poseStack.popPose();
+        poseStack.popMatrix();
     }
 
     public static boolean click(double mouseX, double mouseY, int button) {

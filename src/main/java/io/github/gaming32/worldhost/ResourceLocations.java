@@ -24,6 +24,6 @@ public final class ResourceLocations {
     }
 
     public static Identifier namespaced(String namespace, String path) {
-        return Identifier.of(namespace, path);
+        return Identifier.tryBuild(namespace, path);
     }
 }

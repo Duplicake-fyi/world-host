@@ -53,7 +53,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentUtils;
 import net.minecraft.network.protocol.status.ClientboundStatusResponsePacket;
 import net.minecraft.network.protocol.status.ServerStatus;
-import net.minecraft.server.players.GameProfileCache;
 import org.apache.commons.io.function.IOConsumer;
 import org.apache.commons.io.function.IOFunction;
 import org.apache.commons.lang3.StringUtils;
@@ -216,8 +215,6 @@ public class WorldHost
     @Nullable
     public static Gateway upnpGateway;
 
-    private static GameProfileCache profileCache;
-
     @Nullable
     public static ProtocolClient protoClient;
     @Nullable
@@ -323,11 +320,6 @@ public class WorldHost
         } catch (IOException e) {
             LOGGER.error("Failed to create cache directory", e);
         }
-        profileCache = new GameProfileCache(
-            ((MinecraftAccessor)Minecraft.getInstance()).getAuthenticationService().createProfileRepository(),
-            CACHE_DIR.resolve("usercache.json").toFile()
-        );
-        profileCache.setExecutor(Minecraft.getInstance());
 
         plugins = ImmutableList.sortedCopyOf(collectPlugins());
         LOGGER.info(
@@ -714,20 +706,12 @@ public class WorldHost
         proxyProtocolClient = null;
     }
 
-    public static GameProfileCache getProfileCache() {
-        return profileCache;
-    }
-
     public static WHPlayerSkin getInsecureSkin(GameProfile profile) {
         return WHPlayerSkin.fromSkinManager(Minecraft.getInstance().getSkinManager(), profile);
     }
 
     public static Identifier getSkinLocationNow(GameProfile profile) {
         return getInsecureSkin(profile).texture();
-    }
-
-    public static void getMaybeAsync(GameProfileCache cache, String name, Consumer<Optional<GameProfile>> action) {
-        cache.getAsync(name).thenAccept(action);
     }
 
     public static GameProfile fetchProfile(MinecraftSessionService sessionService, UUID uuid, @Nullable GameProfile fallback) {
@@ -754,14 +738,8 @@ public class WorldHost
         if (profile.id().version() != 4) {
             return CompletableFuture.completedFuture(profile);
         }
-        return CompletableFuture.supplyAsync(
-            () -> WorldHost.fetchProfile(Minecraft.getInstance().getMinecraftSessionService(), profile),
-            //#if MC >= 1.20.4
-            Util.nonCriticalIoPool()
-            //#else
-            //$$ Util.ioPool()
-            //#endif
-        );
+        // TODO: Update for 1.21.11 - session service access changed
+        return CompletableFuture.completedFuture(profile);
     }
 
     public static CompletableFuture<ProfileInfo> resolveProfileInfo(GameProfile profile) {

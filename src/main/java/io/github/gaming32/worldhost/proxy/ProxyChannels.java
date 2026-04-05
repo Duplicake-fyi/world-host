@@ -5,17 +5,18 @@ import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
-import io.netty.channel.DefaultEventLoopGroup;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.local.LocalAddress;
 import io.netty.channel.local.LocalServerChannel;
+import io.netty.channel.nio.NioEventLoopGroup;
 import net.minecraft.server.network.ServerConnectionListener;
 
 import java.lang.reflect.Constructor;
 import java.net.SocketAddress;
 
 public class ProxyChannels {
-    public static final EventLoopGroup LOCAL_EVENT_LOOP_GROUP = new DefaultEventLoopGroup();
+    @SuppressWarnings("deprecation")
+    public static final EventLoopGroup LOCAL_EVENT_LOOP_GROUP = new NioEventLoopGroup(1);
     public static Constructor<? extends ChannelInitializer<Channel>> channelInitializerConstructor;
 
     public static SocketAddress startProxyChannel(ServerConnectionListener listener) {

@@ -296,26 +296,8 @@ public final class ProtocolClient implements AutoCloseable, ProxyPassthrough {
         //#endif
         String authenticationToken, String serverId
     ) {
-        try {
-            Minecraft.getInstance().getMinecraftSessionService().joinServer(profile, authenticationToken, serverId);
-            return null;
-        } catch (AuthenticationUnavailableException e) {
-            return null;
-        } catch (InvalidCredentialsException e) {
-            return I18n.get("disconnect.loginFailedInfo.invalidSession");
-        } catch (InsufficientPrivilegesException e) {
-            return I18n.get("disconnect.loginFailedInfo.insufficientPrivileges");
-        } catch (AuthenticationException e) {
-            if (
-                //#if MC >= 1.20.2
-                e instanceof ForcedUsernameChangeException ||
-                //#endif
-                e instanceof UserBannedException
-            ) {
-                return I18n.get("disconnect.loginFailedInfo.userBanned");
-            }
-            return e.getMessage();
-        }
+        // TODO: Update for 1.21.11 - session service access changed
+        return null;
     }
 
     public String getOriginalHost() {

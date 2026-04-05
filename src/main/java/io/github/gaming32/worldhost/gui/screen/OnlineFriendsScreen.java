@@ -146,9 +146,9 @@ public class OnlineFriendsScreen extends ScreenWithInfoTexts implements FriendsL
         updateButtonActivationStates();
 
         //#if MC >= 1.20.4 && FABRIC && 0
-        if (WorldHost.isModLoaded("viafabricplus")) {
-            vfpInit();
-        }
+        // if (WorldHost.isModLoaded("viafabricplus")) {
+        //     vfpInit();
+        // }
         //#endif
     }
 
@@ -235,16 +235,26 @@ public class OnlineFriendsScreen extends ScreenWithInfoTexts implements FriendsL
     @Override
     public void friendsListUpdate(Map<UUID, OnlineFriend> friends) {
         final var friendsToAdd = new LinkedHashMap<>(friends);
-        for (int i = list.children().size() - 1; i >= 0; i--) {
-            final UUID uuid = list.children().get(i).friend.uuid();
+        final var remainingFriends = new LinkedHashMap<UUID, OnlineFriend>();
+        
+        // Collect friends that should remain
+        for (int i = 0; i < list.children().size(); i++) {
+            final OnlineFriendsListEntry entry = list.children().get(i);
+            final UUID uuid = entry.friend.uuid();
             if (friends.containsKey(uuid)) {
                 friendsToAdd.remove(uuid);
             } else {
-                list.removeEntry(i);
+                remainingFriends.put(uuid, entry.friend);
             }
         }
 
+        // Clear and rebuild the list by removing all children
+        // TODO: Find proper way to remove entries in 1.21.11
+        for (final var child : List.copyOf(list.children())) {
+            list.children().remove(child);
+        }
         WorldHost.pingFriends(friends.values());
+        addListEntries(remainingFriends);
         addListEntries(friendsToAdd);
     }
 

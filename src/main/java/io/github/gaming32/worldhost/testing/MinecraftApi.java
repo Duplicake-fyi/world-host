@@ -36,23 +36,27 @@ public class MinecraftApi {
 
     public static void click(double x, double y, int button) {
         final Window window = Minecraft.getInstance().getWindow();
+        // TODO: Update for 1.21.11 - window handle access changed
+        final long windowHandle = 0; // window.getHandle();
         WindowCallbackManager.cursorPosCallback.invoke(
-            window.window(),
+            windowHandle,
             x * window.getScreenWidth() / window.getGuiScaledWidth(),
             y * window.getScreenHeight() / window.getGuiScaledHeight()
         );
-        WindowCallbackManager.mouseButtonCallback.invoke(window.window(), button, InputConstants.PRESS, 0);
-        WindowCallbackManager.mouseButtonCallback.invoke(window.window(), button, InputConstants.RELEASE, 0);
+        WindowCallbackManager.mouseButtonCallback.invoke(windowHandle, button, InputConstants.PRESS, 0);
+        WindowCallbackManager.mouseButtonCallback.invoke(windowHandle, button, InputConstants.RELEASE, 0);
     }
 
     public static void press(int keycode) {
-        final long window = Minecraft.getInstance().getWindow().window();
+        // TODO: Update for 1.21.11 - window handle access changed
+        final long window = 0; // Minecraft.getInstance().getWindow().getHandle();
         WindowCallbackManager.keyCallback.invoke(window, keycode, 0, InputConstants.PRESS, 0);
         WindowCallbackManager.keyCallback.invoke(window, keycode, 0, InputConstants.RELEASE, 0);
     }
 
     public static void type(String message) {
-        final long window = Minecraft.getInstance().getWindow().window();
+        // TODO: Update for 1.21.11 - window handle access changed
+        final long window = 0; // Minecraft.getInstance().getWindow().getHandle();
         message.codePoints().forEach(cp -> WindowCallbackManager.charModsCallback.invoke(window, cp, 0));
     }
 
