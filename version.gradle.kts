@@ -202,7 +202,7 @@ dependencies {
 
     if (isFabric) {
         when (mcVersion) {
-            1_21_11 -> "maven.modrinth:modmenu:17.0.0-alpha.1"
+            1_21_11 -> "maven.modrinth:modmenu:16.0.0"
             1_21_04 -> "13.0.3"
             1_21_03 -> "12.0.0"
             1_21_01 -> "11.0.3"
@@ -256,12 +256,9 @@ dependencies {
         }
     }
 
-    if (mcVersion >= 1_20_04 && isFabric) {
+    if (mcVersion >= 1_20_04 && mcVersion < 1_21_11 && isFabric) {
         modCompileOnly(
-            when {
-                mcVersion >= 1_21_11 -> "maven.modrinth:viafabricplus:4.4.10"
-                else -> "de.florianmichael:viafabricplus:3.0.2"
-            }
+            "de.florianmichael:viafabricplus:3.0.2"
         ) {
             isTransitive = false
         }
