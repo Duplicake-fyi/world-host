@@ -255,7 +255,12 @@ dependencies {
     }
 
     if (mcVersion >= 1_20_04 && isFabric) {
-        modCompileOnly("de.florianmichael:viafabricplus:3.0.2") {
+        modCompileOnly(
+            when {
+                mcVersion >= 1_21_11 -> "maven.modrinth:viafabricplus:4.4.10"
+                else -> "de.florianmichael:viafabricplus:3.0.2"
+            }
+        ) {
             isTransitive = false
         }
     }
