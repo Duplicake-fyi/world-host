@@ -202,7 +202,7 @@ dependencies {
 
     if (isFabric) {
         when (mcVersion) {
-            1_21_11 -> null
+            1_21_11 -> "maven.modrinth:modmenu:17.0.0-alpha.1"
             1_21_04 -> "13.0.3"
             1_21_03 -> "12.0.0"
             1_21_01 -> "11.0.3"
@@ -212,7 +212,9 @@ dependencies {
             1_19_02 -> "4.2.0-beta.2"
             else -> null
         }?.let {
-            modImplementation("com.terraformersmc:modmenu:$it")
+            modImplementation(
+                if (mcVersion >= 1_21_11) it else "com.terraformersmc:modmenu:$it"
+            )
         }
     }
 
