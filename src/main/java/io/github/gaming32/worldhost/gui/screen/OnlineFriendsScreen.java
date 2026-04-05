@@ -28,7 +28,6 @@ import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
 import org.apache.commons.lang3.Validate;
 import org.jetbrains.annotations.NotNull;
@@ -56,6 +55,12 @@ import net.minecraft.client.gui.GuiGraphics;
 //$$ import com.mojang.blaze3d.vertex.PoseStack;
 //#endif
 
+//#if MC >= 1.21.11
+//$$ import net.minecraft.resources.Identifier;
+//#else
+import net.minecraft.resources.ResourceLocation;
+//#endif
+
 //#if MC >= 1.19.4
 import java.util.Arrays;
 import net.minecraft.client.gui.components.Tooltip;
@@ -65,9 +70,27 @@ import net.minecraft.client.gui.components.Tooltip;
 
 public class OnlineFriendsScreen extends ScreenWithInfoTexts implements FriendsListUpdate {
     //#if MC >= 1.20.2
-    private static final ResourceLocation INCOMPATIBLE_SPRITE = ResourceLocations.minecraft("server_list/incompatible");
-    private static final ResourceLocation JOIN_HIGHLIGHTED_SPRITE = ResourceLocations.minecraft("server_list/join_highlighted");
-    private static final ResourceLocation JOIN_SPRITE = ResourceLocations.minecraft("server_list/join");
+    private static final
+        //#if MC >= 1.21.11
+        //$$ Identifier
+        //#else
+        ResourceLocation
+        //#endif
+        INCOMPATIBLE_SPRITE = ResourceLocations.minecraft("server_list/incompatible");
+    private static final
+        //#if MC >= 1.21.11
+        //$$ Identifier
+        //#else
+        ResourceLocation
+        //#endif
+        JOIN_HIGHLIGHTED_SPRITE = ResourceLocations.minecraft("server_list/join_highlighted");
+    private static final
+        //#if MC >= 1.21.11
+        //$$ Identifier
+        //#else
+        ResourceLocation
+        //#endif
+        JOIN_SPRITE = ResourceLocations.minecraft("server_list/join");
     //#else
     //$$ private static final ResourceLocation GUI_ICONS_LOCATION = ResourceLocations.minecraft("textures/gui/icons.png");
     //$$ private static final ResourceLocation GUI_SERVER_SELECTION_LOCATION = ResourceLocations.minecraft("textures/gui/server_selection.png");
@@ -341,7 +364,13 @@ public class OnlineFriendsScreen extends ScreenWithInfoTexts implements FriendsL
         private List<FormattedCharSequence> joinabilityTooltip;
         private boolean joinable;
 
-        private final ResourceLocation iconTextureId;
+        private final
+            //#if MC >= 1.21.11
+            //$$ Identifier
+            //#else
+            ResourceLocation
+            //#endif
+            iconTextureId;
         //#if MC >= 1.19.4
         private byte[] iconData;
         //#else

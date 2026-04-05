@@ -3,13 +3,18 @@ package io.github.gaming32.worldhost.toast;
 import io.github.gaming32.worldhost.gui.screen.WorldHostScreen;
 import io.github.gaming32.worldhost.versions.WorldHostRenderSystem;
 import java.util.function.Supplier;
-import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 
 //#if MC >= 1.20.0
 import net.minecraft.client.gui.GuiGraphics;
 //#else
 //$$ import com.mojang.blaze3d.vertex.PoseStack;
+//#endif
+
+//#if MC >= 1.21.11
+//$$ import net.minecraft.resources.Identifier;
+//#else
+import net.minecraft.resources.ResourceLocation;
 //#endif
 
 @FunctionalInterface
@@ -24,7 +29,13 @@ public interface IconRenderer {
         int x, int y, int width, int height
     );
 
-    static IconRenderer createSkinIconRenderer(Supplier<ResourceLocation> skinTexture) {
+    static IconRenderer createSkinIconRenderer(
+        //#if MC >= 1.21.11
+        //$$ Supplier<Identifier> skinTexture
+        //#else
+        Supplier<ResourceLocation> skinTexture
+        //#endif
+    ) {
         return (context, x, y, width, height) -> {
             final var texture = skinTexture.get();
             WorldHostRenderSystem.enableBlend();

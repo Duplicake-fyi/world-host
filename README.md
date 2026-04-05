@@ -1,6 +1,9 @@
-<a href="https://modrinth.com/mod/world-host"><img alt="WH icon" width="280" align="right" src="https://raw.githubusercontent.com/Gaming32/world-host/main/src/main/resources/assets/world-host/icon.png"></a>
+<a href="https://modrinth.com/mod/world-host"><img alt="WH icon" width="280" align="right" src="https://raw.githubusercontent.com/Duplicake-fyi/world-host/main/src/main/resources/assets/world-host/icon.png"></a>
 
 # World Host
+
+This repository is a maintained fork of the original World Host project by Gaming32.
+Original project: https://github.com/Gaming32/world-host
 
 [![Modrinth](https://img.shields.io/modrinth/dt/world-host?color=00AF5C&label=Downloads&style=round&logo=modrinth)](https://modrinth.com/mod/world-host)
 ![Mod Environment](https://img.shields.io/badge/Enviroment-Client-purple?style=round)

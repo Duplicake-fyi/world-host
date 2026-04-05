@@ -53,7 +53,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentUtils;
 import net.minecraft.network.protocol.status.ClientboundStatusResponsePacket;
 import net.minecraft.network.protocol.status.ServerStatus;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.players.GameProfileCache;
 import org.apache.commons.io.function.IOConsumer;
 import org.apache.commons.io.function.IOFunction;
@@ -100,6 +99,12 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+
+//#if MC >= 1.21.11
+//$$ import net.minecraft.resources.Identifier;
+//#else
+import net.minecraft.resources.ResourceLocation;
+//#endif
 
 import static net.minecraft.commands.Commands.literal;
 
@@ -723,7 +728,13 @@ public class WorldHost
         return WHPlayerSkin.fromSkinManager(Minecraft.getInstance().getSkinManager(), profile);
     }
 
-    public static ResourceLocation getSkinLocationNow(GameProfile profile) {
+    public static
+        //#if MC >= 1.21.11
+        //$$ Identifier
+        //#else
+        ResourceLocation
+        //#endif
+        getSkinLocationNow(GameProfile profile) {
         return getInsecureSkin(profile).texture();
     }
 

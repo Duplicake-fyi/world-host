@@ -1,6 +1,6 @@
 plugins {
     id("io.github.gaming32.gradle.preprocess-root") version "0.4.5"
-    id("dev.architectury.loom") version "1.10.430" apply false
+    id("dev.architectury.loom") version "1.13.467" apply false
     id("com.modrinth.minotaur") version "2.8.7" apply false
     id("xyz.wagyourtail.jvmdowngrader") version "1.2.2" apply false
 }
@@ -10,8 +10,8 @@ repositories {
 }
 
 preprocess {
-    val fabric12105 = createNode("1.21.5-fabric", 1_21_05)
-    val neoforge12105 = createNode("1.21.5-neoforge", 1_21_05)
+    val fabric12111 = createNode("1.21.11-fabric", 1_21_11)
+    val neoforge12111 = createNode("1.21.11-neoforge", 1_21_11)
     val fabric12104 = createNode("1.21.4-fabric", 1_21_04)
     val neoforge12104 = createNode("1.21.4-neoforge", 1_21_04)
     val fabric12103 = createNode("1.21.3-fabric", 1_21_03)
@@ -27,8 +27,8 @@ preprocess {
     val fabric11902 = createNode("1.19.2-fabric", 1_19_02)
     val forge11902 = createNode("1.19.2-forge", 1_19_02)
 
-    fabric12105.link(neoforge12105)
-    neoforge12105.link(neoforge12104)
+    fabric12111.link(neoforge12111)
+    neoforge12111.link(neoforge12104)
     neoforge12104.link(fabric12104)
     fabric12104.link(fabric12103)
     fabric12103.link(neoforge12103)

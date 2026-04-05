@@ -7,7 +7,6 @@ import net.minecraft.client.gui.components.AbstractSelectionList;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -26,6 +25,12 @@ import net.minecraft.client.gui.GuiGraphics;
 
 //#if MC >= 1.21.2
 import net.minecraft.client.renderer.RenderType;
+//#endif
+
+//#if MC >= 1.21.11
+//$$ import net.minecraft.resources.Identifier;
+//#else
+import net.minecraft.resources.ResourceLocation;
 //#endif
 
 import net.minecraft.util.FormattedCharSequence;
@@ -150,7 +155,12 @@ public abstract class WorldHostScreen extends Screen {
         //#else
         GuiGraphics context,
         //#endif
-        ResourceLocation texture, int x, int y, float uOffset, float vOffset, int width, int height, int uWidth, int vHeight, int textureWidth, int textureHeight
+        //#if MC >= 1.21.11
+        //$$ Identifier texture,
+        //#else
+        ResourceLocation texture,
+        //#endif
+        int x, int y, float uOffset, float vOffset, int width, int height, int uWidth, int vHeight, int textureWidth, int textureHeight
     ) {
         //#if MC >= 1.20.0
         context.
@@ -184,7 +194,12 @@ public abstract class WorldHostScreen extends Screen {
         //#else
         GuiGraphics context,
         //#endif
-        ResourceLocation texture, int x, int y, float uOffset, float vOffset, int width, int height, int textureWidth, int textureHeight
+        //#if MC >= 1.21.11
+        //$$ Identifier texture,
+        //#else
+        ResourceLocation texture,
+        //#endif
+        int x, int y, float uOffset, float vOffset, int width, int height, int textureWidth, int textureHeight
     ) {
         //#if MC >= 1.20.0
         context.
@@ -206,7 +221,15 @@ public abstract class WorldHostScreen extends Screen {
     }
 
     //#if MC >= 1.20.2
-    public static void blitSprite(GuiGraphics graphics, ResourceLocation sprite, int x, int y, int width, int height) {
+    public static void blitSprite(
+        GuiGraphics graphics,
+        //#if MC >= 1.21.11
+        //$$ Identifier sprite,
+        //#else
+        ResourceLocation sprite,
+        //#endif
+        int x, int y, int width, int height
+    ) {
         graphics.blitSprite(
             //#if MC >= 1.21.2
             RenderType::guiTextured,

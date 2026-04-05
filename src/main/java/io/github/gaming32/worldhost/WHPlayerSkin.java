@@ -2,8 +2,13 @@ package io.github.gaming32.worldhost;
 
 import com.mojang.authlib.GameProfile;
 import net.minecraft.client.resources.SkinManager;
-import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
+
+//#if MC >= 1.21.11
+//$$ import net.minecraft.resources.Identifier;
+//#else
+import net.minecraft.resources.ResourceLocation;
+//#endif
 
 //#if MC >= 1.20.2
 import net.minecraft.client.resources.PlayerSkin;
@@ -17,8 +22,13 @@ import net.minecraft.client.resources.PlayerSkin;
 
 // TODO: Remove in 1.20.2+
 public record WHPlayerSkin(
+    //#if MC >= 1.21.11
+    //$$ Identifier texture,
+    //$$ @Nullable Identifier capeTexture,
+    //#else
     ResourceLocation texture,
     @Nullable ResourceLocation capeTexture,
+    //#endif
     Model model
 ) {
     //#if MC >= 1.20.2

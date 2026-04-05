@@ -116,3 +116,8 @@ run/
 
 # Avoid ignoring Gradle wrapper jar file (.jar files are usually ignored)
 !gradle-wrapper.jar
+
+.gradle-user-home
+.gradle-user-home-2
+.gradle-user-home-3
+.gradle-user-home-4
