@@ -73,4 +73,5 @@ public class MixinGameRenderer {
         graphics.renderDeferredElements();
     }
     //#endif
+    //#endif
 }
