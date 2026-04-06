@@ -96,11 +96,11 @@ loom {
         }
         remove(getByName("server"))
 
-        val usernameSuffix = NetworkInterface.getNetworkInterfaces()
-            .nextElement()
-            .hardwareAddress
-            .toHexString()
-            .substring(0, 10)
+        val usernameSuffix = Collections.list(NetworkInterface.getNetworkInterfaces())
+            .firstNotNullOfOrNull(NetworkInterface::getHardwareAddress)
+            ?.toHexString()
+            ?.take(10)
+            ?: "0000000000"
         for (name in listOf("Host", "Joiner")) {
             val runName = "test$name"
             val user = name.uppercase()
@@ -151,6 +151,7 @@ dependencies {
             nameSyntheticMembers = true
         }
         when {
+            mcVersion >= 1_21_11 -> null
             mcVersion >= 1_21_04 -> "1.21.4:2025.03.23"
             mcVersion >= 1_21_03 -> "1.21.3:2024.12.07"
             mcVersion >= 1_21_01 -> "1.21.1:2024.11.17"
@@ -165,7 +166,7 @@ dependencies {
     })
 
     when {
-        isFabric -> modImplementation("net.fabricmc:fabric-loader:0.16.10")
+        isFabric -> modImplementation("net.fabricmc:fabric-loader:${if (mcVersion >= 1_21_11) "0.18.1" else "0.16.10"}")
         isForge ->
             when (mcVersion) {
                 1_20_01 -> "47.1.3"
@@ -175,6 +176,7 @@ dependencies {
             }.let { "forge"("net.minecraftforge:forge:$mcVersionString-$it") }
         isNeoForge ->
             when (mcVersion) {
+                1_21_11 -> "21.11.x"
                 1_21_05 -> "21.5.26-beta"
                 1_21_04 -> "21.4.121"
                 1_21_03 -> "21.3.56"
@@ -191,6 +193,7 @@ dependencies {
 
     if (isFabric) {
         when (mcVersion) {
+            1_21_11 -> "17.0.0"
             1_21_05 -> "14.0.0-rc.2"
             1_21_04 -> "13.0.3"
             1_21_03 -> "12.0.0"
@@ -214,6 +217,7 @@ dependencies {
 
     if (isFabric) {
         when (mcVersion) {
+            1_21_11 -> "0.139.5+1.21.11"
             1_21_05 -> "0.119.9+1.21.5"
             1_21_04 -> "0.119.2+1.21.4"
             1_21_03 -> "0.114.0+1.21.3"
@@ -244,13 +248,14 @@ dependencies {
     }
 
     if (mcVersion >= 1_20_04 && isFabric) {
-        modCompileOnly("de.florianmichael:viafabricplus:3.0.2") {
+        modCompileOnly("maven.modrinth:viafabricplus:3.0.2") {
             isTransitive = false
         }
     }
 
-    compileOnly("de.maxhenkel.voicechat:voicechat-api:2.5.0")
+    compileOnly("de.maxhenkel.voicechat:voicechat-api:${if (mcVersion >= 1_21_11) "2.6.13" else "2.5.0"}")
     when (mcVersion) {
+        1_21_11 -> "2.6.13"
         1_21_05 -> "2.5.28"
         1_21_04 -> "2.5.28"
         1_21_03 -> "2.5.28"
@@ -310,6 +315,7 @@ modrinth {
         1_20_04 -> "1.20.3"
         1_21_01 -> "1.21"
         1_21_03 -> "1.21.2"
+        1_21_11 -> "1.21.10"
         else -> null
     }?.let(gameVersions::add)
     loaders.add(this@Version_gradle.loaderName)
@@ -332,6 +338,7 @@ tasks.processResources {
     // TODO: Remove pack.mcmeta in 1.20.4
     filesMatching("pack.mcmeta") {
         expand("pack_format" to when {
+            mcVersion >= 1_21_11 -> 75
             mcVersion >= 1_21_05 -> 55
             mcVersion >= 1_21_04 -> 46
             mcVersion >= 1_21_02 -> 42
