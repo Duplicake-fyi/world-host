@@ -34,31 +34,9 @@
   ],
   "depends": {
     "fabricloader": "*",
-    //#if MC == 1.19.4
-    //?? "minecraft": ">=1.19.4 <1.20",
-    //#elseif MC == 1.20.1
-    //?? "minecraft": ">=1.20- <1.20.2",
-    //#elseif MC == 1.20.4
-    //?? "minecraft": ">=1.20.3- <1.20.5",
-    //#elseif MC == 1.20.6
-    //?? "minecraft": ">=1.20.5- <1.20.7",
-    //#elseif MC == 1.21.1
-    //?? "minecraft": ">=1.21.0 <1.21.2",
-    //#elseif MC == 1.21.3
-    //?? "minecraft": ">=1.21.2 <1.21.4",
-    //#else
     "minecraft": "$mc_version",
-    //#endif
     "fabric-resource-loader-v0": "*"
   },
-  "breaks": {
-    //#if MC == 1.19.4
-    //?? "modmenu": "<6.2.0"
-    //#endif
-  },
   "suggests": {
-    //#if MC == 1.20.1 && 0
-    //?? "world-host-bedrock": ">=0.4.2"
-    //#endif
   }
 }
