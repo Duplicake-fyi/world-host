@@ -117,7 +117,7 @@ dependencies {
 
     when {
         isFabric -> modImplementation("net.fabricmc:fabric-loader:0.18.1")
-        isNeoForge -> "neoForge"("net.neoforged:neoforge:21.11.x")
+        isNeoForge -> "neoForge"("net.neoforged:neoforge:21.11.41-beta")
     }
 
     fun simpleJavaLibrary(notation: Any) = minecraftRuntimeLibraries(include(implementation(notation)!!)!!)
