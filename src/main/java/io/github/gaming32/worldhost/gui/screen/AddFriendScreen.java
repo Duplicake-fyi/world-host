@@ -4,12 +4,11 @@ import io.github.gaming32.worldhost.WorldHost;
 import io.github.gaming32.worldhost.gui.widget.UserListWidget;
 import io.github.gaming32.worldhost.plugin.FriendAdder;
 import io.github.gaming32.worldhost.plugin.FriendListFriend;
-import net.minecraft.Util;
+import net.minecraft.util.Util;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.players.GameProfileCache;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.VisibleForTesting;
@@ -81,8 +80,6 @@ public class AddFriendScreen extends WorldHostScreen {
     protected void init() {
         assert minecraft != null;
         sendRepeatEvents(true);
-        GameProfileCache.setUsesAuthentication(true); // This makes non-existent users return an empty value instead of an offline mode fallback.
-
         nameField = addRenderableWidget(new EditBox(font, width / 2 - 100, 66, 200, 20, nameField, FRIEND_USERNAME_TEXT));
         friendAdders.stream().mapToInt(FriendAdder::maxValidNameLength).max().ifPresent(nameField::setMaxLength);
         //#if MC >= 1.19.4

@@ -1,7 +1,9 @@
 package io.github.gaming32.worldhost.gui.widget;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.InputWithModifiers;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.NotNull;
@@ -46,10 +48,6 @@ public abstract class CustomCycleButton<T, B extends CustomCycleButton<T, B>> ex
     ) {
         super(
             x, y, width, height, CommonComponents.EMPTY, b -> {
-                @SuppressWarnings("unchecked") final B cycle = (B)b;
-                final int add = Screen.hasShiftDown() ? -1 : 1;
-                cycle.setValueIndex(Math.floorMod(cycle.getValueIndex() + add, cycle.getValues().length));
-                cycle.getOnUpdate().accept(cycle);
             },
             //#if MC >= 1.19.4
             DEFAULT_NARRATION
@@ -92,6 +90,14 @@ public abstract class CustomCycleButton<T, B extends CustomCycleButton<T, B>> ex
     }
 
     @Override
+    public void onPress(InputWithModifiers input) {
+        final int add = input.hasShiftDown() ? -1 : 1;
+        setValueIndex(Math.floorMod(getValueIndex() + add, getValues().length));
+        @SuppressWarnings("unchecked") final B cycle = (B)this;
+        getOnUpdate().accept(cycle);
+    }
+
+    @Override
     public final void setMessage(@NotNull Component message) {
         throw new UnsupportedOperationException("Cannot set message of " + getClass().getSimpleName());
     }
@@ -111,6 +117,18 @@ public abstract class CustomCycleButton<T, B extends CustomCycleButton<T, B>> ex
         result = title.copy().append(": ").append(valueMessage);
         messages.put(valueMessage, result);
         return result;
+    }
+
+    @Override
+    protected void renderContents(GuiGraphics context, int mouseX, int mouseY, float partialTick) {
+        final int color = active ? 0xffffff : 0xa0a0a0;
+        context.drawCenteredString(
+            Minecraft.getInstance().font,
+            getMessage(),
+            getX() + getWidth() / 2,
+            getY() + (getHeight() - 8) / 2,
+            color
+        );
     }
 
     @NotNull

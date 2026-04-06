@@ -6,8 +6,9 @@ import io.github.gaming32.worldhost.mixin.PlainTextButtonAccessor;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.PlainTextButton;
-import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.InputWithModifiers;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentUtils;
 import net.minecraft.network.chat.Style;
@@ -15,12 +16,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.function.Supplier;
-
-//#if MC >= 1.20.0
-import net.minecraft.client.gui.GuiGraphics;
-//#else
-//$$ import com.mojang.blaze3d.vertex.PoseStack;
-//#endif
 
 public final class OnlineStatusButton extends PlainTextButton {
     private static final ChatFormatting[] COLORS = {
@@ -42,16 +37,7 @@ public final class OnlineStatusButton extends PlainTextButton {
     private int currentStatus = getStatus();
 
     public OnlineStatusButton(int alignedX, int y, int height, boolean rightAlign, Font font) {
-        super(alignedX, y, 0, height, generateStatusComponent(), b -> {
-            if (Screen.hasShiftDown()) {
-                if (getStatus() != 1) {
-                    WorldHost.reconnect(true, true);
-                }
-            } else {
-                final Minecraft minecraft = Minecraft.getInstance();
-                minecraft.setScreen(new WorldHostConfigScreen(minecraft.screen));
-            }
-        }, font);
+        super(alignedX, y, 0, height, generateStatusComponent(), b -> {}, font);
         this.alignedX = alignedX;
         this.font = font;
         this.rightAlign = rightAlign;
@@ -86,21 +72,19 @@ public final class OnlineStatusButton extends PlainTextButton {
     }
 
     @Override
-    public void
-    //#if MC >= 1.19.4
-    renderWidget
-    //#else
-    //$$ renderButton
-    //#endif
-        (
-            @NotNull
-            //#if MC < 1.20.0
-            //$$ PoseStack context,
-            //#else
-            GuiGraphics context,
-            //#endif
-            int i, int j, float f
-        ) {
+    public void onPress(InputWithModifiers input) {
+        if (input.hasShiftDown()) {
+            if (getStatus() != 1) {
+                WorldHost.reconnect(true, true);
+            }
+        } else {
+            final Minecraft minecraft = Minecraft.getInstance();
+            minecraft.setScreen(new WorldHostConfigScreen(minecraft.screen));
+        }
+    }
+
+    @Override
+    public void renderContents(@NotNull GuiGraphics context, int i, int j, float f) {
         final int status = getStatus();
         if (status != currentStatus || (status == 0 && (WorldHost.reconnectDelay + 1) % 20 == 0)) {
             currentStatus = status;
@@ -112,13 +96,7 @@ public final class OnlineStatusButton extends PlainTextButton {
             setWidth(font.width(message));
             updateX();
         }
-        super.
-            //#if MC >= 1.19.4
-            renderWidget
-            //#else
-            //$$ renderButton
-            //#endif
-                (context, i, j, f);
+        super.renderContents(context, i, j, f);
     }
 
     @Override

@@ -1,14 +1,14 @@
 package io.github.gaming32.worldhost.gui.screen;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import io.github.gaming32.worldhost.versions.ButtonBuilder;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.components.AbstractSelectionList;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.NotNull;
+import org.joml.Matrix3x2fStack;
 
 import java.util.List;
 
@@ -24,9 +24,7 @@ import net.minecraft.client.gui.GuiGraphics;
 //$$ import net.minecraft.client.Minecraft;
 //#endif
 
-//#if MC >= 1.21.2
-import net.minecraft.client.renderer.RenderType;
-//#endif
+import net.minecraft.client.renderer.RenderPipelines;
 
 import net.minecraft.util.FormattedCharSequence;
 
@@ -105,18 +103,10 @@ public abstract class WorldHostScreen extends Screen {
         @NotNull List<? extends FormattedCharSequence> tooltips, int mouseX, int mouseY
     ) {
         //#if MC >= 1.20.0
-        context.renderTooltip
+        context.setTooltipForNextFrame(font, tooltips, mouseX, mouseY);
         //#else
-        //$$ super.renderTooltip
+        //$$ super.renderTooltip(context, tooltips, mouseX, mouseY);
         //#endif
-            (
-                //#if MC < 1.20.0
-                //$$ context,
-                //#else
-                font,
-                //#endif
-                tooltips, mouseX, mouseY
-            );
     }
 
     public static void drawString(
@@ -150,7 +140,7 @@ public abstract class WorldHostScreen extends Screen {
         //#else
         GuiGraphics context,
         //#endif
-        ResourceLocation texture, int x, int y, float uOffset, float vOffset, int width, int height, int uWidth, int vHeight, int textureWidth, int textureHeight
+        Identifier texture, int x, int y, float uOffset, float vOffset, int width, int height, int uWidth, int vHeight, int textureWidth, int textureHeight
     ) {
         //#if MC >= 1.20.0
         context.
@@ -160,7 +150,7 @@ public abstract class WorldHostScreen extends Screen {
         //#endif
         blit(
             //#if MC >= 1.21.2
-            RenderType::guiTextured,
+            RenderPipelines.GUI_TEXTURED,
             //#endif
             //#if MC < 1.20.0
             //$$ context,
@@ -184,7 +174,7 @@ public abstract class WorldHostScreen extends Screen {
         //#else
         GuiGraphics context,
         //#endif
-        ResourceLocation texture, int x, int y, float uOffset, float vOffset, int width, int height, int textureWidth, int textureHeight
+        Identifier texture, int x, int y, float uOffset, float vOffset, int width, int height, int textureWidth, int textureHeight
     ) {
         //#if MC >= 1.20.0
         context.
@@ -194,7 +184,7 @@ public abstract class WorldHostScreen extends Screen {
         //#endif
         blit(
             //#if MC >= 1.21.2
-            RenderType::guiTextured,
+            RenderPipelines.GUI_TEXTURED,
             //#endif
             //#if MC < 1.20.0
             //$$ context,
@@ -206,10 +196,10 @@ public abstract class WorldHostScreen extends Screen {
     }
 
     //#if MC >= 1.20.2
-    public static void blitSprite(GuiGraphics graphics, ResourceLocation sprite, int x, int y, int width, int height) {
+    public static void blitSprite(GuiGraphics graphics, Identifier sprite, int x, int y, int width, int height) {
         graphics.blitSprite(
             //#if MC >= 1.21.2
-            RenderType::guiTextured,
+            RenderPipelines.GUI_TEXTURED,
             //#endif
             sprite, x, y, width, height
         );
@@ -297,7 +287,7 @@ public abstract class WorldHostScreen extends Screen {
         );
     }
 
-    public static PoseStack pose(
+    public static Matrix3x2fStack pose(
         @NotNull
         //#if MC < 1.20.0
         //$$ PoseStack context

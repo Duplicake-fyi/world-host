@@ -6,7 +6,7 @@ import org.spongepowered.asm.mixin.Mixin;
 //#if MC >= 1.19.4
 //#if MC >= 1.20.0
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.renderer.RenderBuffers;
+import net.minecraft.client.gui.render.state.GuiRenderState;
 //#else
 //$$ import com.mojang.blaze3d.vertex.PoseStack;
 //#endif
@@ -30,9 +30,6 @@ public class MixinGameRenderer {
     private Minecraft minecraft;
 
     //#if MC >= 1.20.0
-    @Shadow @Final private RenderBuffers renderBuffers;
-    //#endif
-
     @Inject(
         method = "render",
         at = @At(
@@ -59,11 +56,12 @@ public class MixinGameRenderer {
         int mouseY = (int)(
             this.minecraft.mouseHandler.ypos() * (double)this.minecraft.getWindow().getGuiScaledHeight() / (double)this.minecraft.getWindow().getScreenHeight()
         );
+        final GuiGraphics graphics = new GuiGraphics(minecraft, new GuiRenderState(), mouseX, mouseY);
         WHToast.render(
             //#if MC < 1.20.0
             //$$ new PoseStack(),
             //#else
-            new GuiGraphics(minecraft, renderBuffers.bufferSource()),
+            graphics,
             //#endif
             mouseX, mouseY,
             //#if MC >= 1.21
@@ -72,6 +70,7 @@ public class MixinGameRenderer {
             //$$ minecraft.getFrameTime()
             //#endif
         );
+        graphics.renderDeferredElements();
     }
     //#endif
 }

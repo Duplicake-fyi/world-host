@@ -3,6 +3,7 @@ package io.github.gaming32.worldhost.gui.screen;
 import com.mojang.blaze3d.platform.InputConstants;
 import io.github.gaming32.worldhost.WorldHost;
 import io.github.gaming32.worldhost.plugin.InfoTextsCategory;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.NotNull;
 
@@ -47,25 +48,27 @@ public abstract class ScreenWithInfoTexts extends WorldHostScreen {
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (button != InputConstants.MOUSE_BUTTON_LEFT) {
-            return super.mouseClicked(mouseX, mouseY, button);
+    public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+        if (event.button() != InputConstants.MOUSE_BUTTON_LEFT) {
+            return super.mouseClicked(event, doubleClick);
         }
+        final double mouseX = event.x();
+        final double mouseY = event.y();
         int textY = height - 73;
         for (final Component line : infoTexts.reversed()) {
             final int textWidth = font.width(line);
             final int textX = width / 2 - textWidth / 2;
             if (mouseX >= textX && mouseX <= textX + textWidth) {
                 if (mouseY >= textY && mouseY <= textY + font.lineHeight) {
-                    final var style = font.getSplitter().componentStyleAtWidth(line, (int)Math.round(mouseX) - textX);
-                    if (style != null) {
-                        handleComponentClicked(style);
+                    final var style = line.getStyle();
+                    if (style != null && style.getClickEvent() != null) {
+                        defaultHandleClickEvent(style.getClickEvent(), minecraft, this);
                         return true;
                     }
                 }
             }
             textY -= font.lineHeight;
         }
-        return super.mouseClicked(mouseX, mouseY, button);
+        return super.mouseClicked(event, doubleClick);
     }
 }

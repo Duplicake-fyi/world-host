@@ -6,7 +6,7 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.local.LocalAddress;
-import io.netty.channel.local.LocalServerChannel;
+import net.minecraft.server.network.EventLoopGroupHolder;
 import net.minecraft.server.network.ServerConnectionListener;
 
 import java.lang.reflect.Constructor;
@@ -17,12 +17,13 @@ public class ProxyChannels {
 
     public static SocketAddress startProxyChannel(ServerConnectionListener listener) {
         final ServerConnectionListenerAccessor accessor = (ServerConnectionListenerAccessor)listener;
+        final var eventLoops = EventLoopGroupHolder.local();
         ChannelFuture channel;
         synchronized (accessor.getChannels()) {
             channel = new ServerBootstrap()
-                .channel(LocalServerChannel.class)
+                .channel(eventLoops.serverChannelCls())
                 .childHandler(createChannelInitializer(listener))
-                .group(ServerConnectionListener.SERVER_EVENT_GROUP.get())
+                .group(eventLoops.eventLoopGroup())
                 .localAddress(LocalAddress.ANY)
                 .bind()
                 .syncUninterruptibly();

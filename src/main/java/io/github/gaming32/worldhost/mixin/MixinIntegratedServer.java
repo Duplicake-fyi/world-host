@@ -1,6 +1,5 @@
 package io.github.gaming32.worldhost.mixin;
 
-import com.mojang.datafixers.DataFixer;
 import io.github.gaming32.worldhost.WorldHost;
 import io.github.gaming32.worldhost.proxy.ProxyChannels;
 import io.github.gaming32.worldhost.proxy.ProxyClient;
@@ -12,7 +11,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.Services;
 import net.minecraft.server.WorldStem;
-import net.minecraft.server.level.progress.ChunkProgressListenerFactory;
+import net.minecraft.server.level.progress.LevelLoadListener;
 import net.minecraft.server.packs.repository.PackRepository;
 import net.minecraft.util.HttpUtil;
 import net.minecraft.world.level.storage.LevelStorageSource;
@@ -31,15 +30,23 @@ import java.net.Proxy;
 public abstract class MixinIntegratedServer extends MinecraftServer {
     public MixinIntegratedServer(
         Thread thread,
+        Minecraft minecraft,
         LevelStorageSource.LevelStorageAccess levelStorageAccess,
         PackRepository packRepository,
         WorldStem worldStem,
-        Proxy proxy,
-        DataFixer dataFixer,
         Services services,
-        ChunkProgressListenerFactory chunkProgressListenerFactory
+        LevelLoadListener levelLoadListener
     ) {
-        super(thread, levelStorageAccess, packRepository, worldStem, proxy, dataFixer, services, chunkProgressListenerFactory);
+        super(
+            thread,
+            levelStorageAccess,
+            packRepository,
+            worldStem,
+            minecraft.getProxy(),
+            minecraft.getFixerUpper(),
+            services,
+            levelLoadListener
+        );
     }
 
     @Shadow @Final private Minecraft minecraft;

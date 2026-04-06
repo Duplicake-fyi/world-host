@@ -94,11 +94,11 @@ public final class UserListWidget
         //#endif
         int mouseX, int mouseY, float partialTick
     ) {
-        pose(context).pushPose();
+        pose(context).pushMatrix();
 
         //#if MC >= 1.21.4
         context.enableScissor(getX(), getY(), getX() + width, getY() + height);
-        pose(context).translate(0, -scrollAmount(), 0);
+        pose(context).translate(0, (float)-scrollAmount());
         //#endif
 
         final int textYOffset = 10 - font.lineHeight / 2;
@@ -118,7 +118,7 @@ public final class UserListWidget
                     mouseY >= y && mouseY <= y + 20
                 ) {
                     //#if MC >= 1.20.1
-                    context.renderTooltip(font, unclippedName, mouseX, mouseY);
+                    context.setTooltipForNextFrame(font, unclippedName, mouseX, mouseY);
                     //#else
                     //$$ Minecraft.getInstance().screen.renderTooltip(context, unclippedName, mouseX, mouseY);
                     //#endif
@@ -130,7 +130,7 @@ public final class UserListWidget
             }
             y += 24;
         }
-        pose(context).popPose();
+        pose(context).popMatrix();
 
         for (final var button : actionButtons) {
             //#if MC >= 1.21.4
@@ -144,7 +144,7 @@ public final class UserListWidget
 
         //#if MC >= 1.21.4
         context.disableScissor();
-        renderScrollbar(context);
+        renderScrollbar(context, mouseX, mouseY);
         //#endif
     }
 

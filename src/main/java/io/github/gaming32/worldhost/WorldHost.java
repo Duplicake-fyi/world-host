@@ -39,7 +39,7 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntAVLTreeMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import net.minecraft.ChatFormatting;
-import net.minecraft.Util;
+import net.minecraft.util.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.ConnectScreen;
 import net.minecraft.client.gui.screens.Screen;
@@ -53,13 +53,12 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentUtils;
 import net.minecraft.network.protocol.status.ClientboundStatusResponsePacket;
 import net.minecraft.network.protocol.status.ServerStatus;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.players.GameProfileCache;
+import net.minecraft.resources.Identifier;
+import net.minecraft.server.players.CachedUserNameToIdResolver;
+import net.minecraft.server.players.UserNameToIdResolver;
 import org.apache.commons.io.function.IOConsumer;
 import org.apache.commons.io.function.IOFunction;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.client.utils.URIBuilder;
-import org.apache.http.impl.EnglishReasonPhraseCatalog;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 import org.quiltmc.parsers.json.JsonReader;
@@ -74,6 +73,7 @@ import java.net.InetAddress;
 import java.net.SocketAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URLEncoder;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -194,7 +194,7 @@ public class WorldHost
     @Nullable
     public static Gateway upnpGateway;
 
-    private static GameProfileCache profileCache;
+    private static UserNameToIdResolver profileCache;
 
     @Nullable
     public static ProtocolClient protoClient;
@@ -284,11 +284,11 @@ public class WorldHost
         } catch (IOException e) {
             LOGGER.error("Failed to create cache directory", e);
         }
-        profileCache = new GameProfileCache(
-            ((MinecraftAccessor)Minecraft.getInstance()).getAuthenticationService().createProfileRepository(),
+        profileCache = new CachedUserNameToIdResolver(
+            Minecraft.getInstance().services().profileRepository(),
             CACHE_DIR.resolve("usercache.json").toFile()
         );
-        profileCache.setExecutor(Minecraft.getInstance());
+        profileCache.resolveOfflineUsers(false);
 
         plugins = ImmutableList.sortedCopyOf(collectPlugins());
         LOGGER.info(
@@ -675,7 +675,7 @@ public class WorldHost
         proxyProtocolClient = null;
     }
 
-    public static GameProfileCache getProfileCache() {
+    public static UserNameToIdResolver getProfileCache() {
         return profileCache;
     }
 
@@ -683,13 +683,15 @@ public class WorldHost
         return WHPlayerSkin.fromSkinManager(Minecraft.getInstance().getSkinManager(), profile);
     }
 
-    public static ResourceLocation getSkinLocationNow(GameProfile profile) {
+    public static Identifier getSkinLocationNow(GameProfile profile) {
         return getInsecureSkin(profile).texture();
     }
 
-    public static void getMaybeAsync(GameProfileCache cache, String name, Consumer<Optional<GameProfile>> action) {
+    public static void getMaybeAsync(UserNameToIdResolver cache, String name, Consumer<Optional<GameProfile>> action) {
         //#if MC >= 1.20.2
-        cache.getAsync(name).thenAccept(action);
+        CompletableFuture
+            .supplyAsync(() -> cache.get(name).map(info -> new GameProfile(info.id(), info.name())), Minecraft.getInstance())
+            .thenAccept(action);
         //#else
         //$$ cache.getAsync(name, action);
         //#endif
@@ -712,15 +714,15 @@ public class WorldHost
     }
 
     public static GameProfile fetchProfile(MinecraftSessionService sessionService, GameProfile profile) {
-        return fetchProfile(sessionService, profile.getId(), profile);
+        return fetchProfile(sessionService, profile.id(), profile);
     }
 
     public static CompletableFuture<GameProfile> resolveGameProfile(GameProfile profile) {
-        if (profile.getId().version() != 4) {
+        if (profile.id().version() != 4) {
             return CompletableFuture.completedFuture(profile);
         }
         return CompletableFuture.supplyAsync(
-            () -> WorldHost.fetchProfile(Minecraft.getInstance().getMinecraftSessionService(), profile),
+            () -> WorldHost.fetchProfile(Minecraft.getInstance().services().sessionService(), profile),
             //#if MC >= 1.20.4
             Util.nonCriticalIoPool()
             //#else
@@ -1055,12 +1057,12 @@ public class WorldHost
 
     public static <T> CompletableFuture<T> httpGet(
         String baseUri,
-        Consumer<URIBuilder> buildAction,
+        Consumer<SimpleUriBuilder> buildAction,
         IOFunction<InputStream, T> handler
     ) {
         final URI uri;
         try {
-            final URIBuilder uriBuilder = new URIBuilder(baseUri);
+            final SimpleUriBuilder uriBuilder = new SimpleUriBuilder(baseUri);
             buildAction.accept(uriBuilder);
             uri = uriBuilder.build();
         } catch (URISyntaxException e) {
@@ -1074,9 +1076,8 @@ public class WorldHost
         return HTTP_CLIENT.sendAsync(request, HttpResponse.BodyHandlers.ofInputStream())
             .thenComposeAsync(response -> {
                 if (response.statusCode() != 200) {
-                    final String reason = EnglishReasonPhraseCatalog.INSTANCE.getReason(response.statusCode(), null);
                     return CompletableFuture.failedFuture(new IOException(
-                        "Failed to GET " + response.request().uri() + ": " + response.statusCode() + " " + reason
+                        "Failed to GET " + response.request().uri() + ": " + response.statusCode()
                     ));
                 }
                 try {
@@ -1085,6 +1086,32 @@ public class WorldHost
                     return CompletableFuture.failedFuture(t);
                 }
             }, Util.ioPool());
+    }
+
+    public static final class SimpleUriBuilder {
+        private final String baseUri;
+        private final List<String> parameters = new ArrayList<>();
+
+        public SimpleUriBuilder(String baseUri) {
+            this.baseUri = baseUri;
+        }
+
+        public SimpleUriBuilder addParameter(String name, String value) {
+            parameters.add(urlEncode(name) + '=' + urlEncode(value));
+            return this;
+        }
+
+        public URI build() throws URISyntaxException {
+            final String query = String.join("&", parameters);
+            final String uri = query.isEmpty()
+                ? baseUri
+                : baseUri + (baseUri.contains("?") ? '&' : '?') + query;
+            return new URI(uri);
+        }
+
+        private static String urlEncode(String value) {
+            return URLEncoder.encode(value, StandardCharsets.UTF_8);
+        }
     }
 
     private static Path getGameDir() {

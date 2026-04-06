@@ -5,7 +5,7 @@ import io.github.gaming32.worldhost.origincheck.checker.GioOriginChecker;
 import io.github.gaming32.worldhost.origincheck.checker.MacOriginChecker;
 import io.github.gaming32.worldhost.origincheck.checker.NoopOriginChecker;
 import io.github.gaming32.worldhost.origincheck.checker.WindowsOriginChecker;
-import net.minecraft.Util;
+import net.minecraft.util.Util;
 
 import java.net.URI;
 import java.nio.file.Path;

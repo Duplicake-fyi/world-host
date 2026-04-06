@@ -7,8 +7,9 @@ import io.github.gaming32.worldhost.plugin.FriendListFriend;
 import io.github.gaming32.worldhost.plugin.InfoTextsCategory;
 import io.github.gaming32.worldhost.plugin.ProfileInfo;
 import io.github.gaming32.worldhost.versions.WorldHostRenderSystem;
-import net.minecraft.Util;
+import net.minecraft.util.Util;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.ObjectSelectionList;
 import net.minecraft.client.gui.screens.ConfirmScreen;
@@ -199,21 +200,16 @@ public class FriendsScreen extends ScreenWithInfoTexts {
         }
 
         @Override
-        public void render(
-            @NotNull
-            //#if MC < 1.20.0
-            //$$ PoseStack context,
-            //#else
-            GuiGraphics context,
-            //#endif
-            int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta
-        ) {
+        public void renderContent(@NotNull GuiGraphics context, int mouseX, int mouseY, boolean hovered, float tickDelta) {
             //#if MC < 1.21.2
             //$$ RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
             //#endif
-            profile.iconRenderer().draw(context, x, y, 32, 32);
+            profile.iconRenderer().draw(context, getX(), getY(), 32, 32);
             WorldHostRenderSystem.disableBlend();
-            drawCenteredString(context, minecraft.font, getNameWithTag(), x + 110, y + 16 - minecraft.font.lineHeight / 2, 0xffffff);
+            drawCenteredString(
+                context, minecraft.font, getNameWithTag(),
+                getX() + 110, getY() + 16 - minecraft.font.lineHeight / 2, 0xffffff
+            );
         }
 
         public void maybeRemove() {
@@ -230,7 +226,7 @@ public class FriendsScreen extends ScreenWithInfoTexts {
         }
 
         @Override
-        public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
             FriendsScreen.this.list.setSelected(this);
             if (Util.getMillis() - clickTime < 250L) {
                 friend.showFriendInfo(FriendsScreen.this);
