@@ -1,6 +1,7 @@
 package io.github.gaming32.worldhost.mixin;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import com.mojang.blaze3d.platform.Window;
 import io.github.gaming32.worldhost.testing.WorldHostTesting;
 import io.github.gaming32.worldhost.testing.WindowCallbackManager;
 import org.lwjgl.glfw.GLFWCharModsCallbackI;
@@ -18,7 +19,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class MixinInputConstants {
     @Inject(method = "setupKeyboardCallbacks", at = @At("HEAD"), cancellable = true)
     private static void mockKeyboardCallbacks(
-        long window,
+        Window window,
         GLFWKeyCallbackI keyCallback,
         GLFWCharModsCallbackI charModifierCallback,
         CallbackInfo ci
@@ -31,7 +32,7 @@ public class MixinInputConstants {
 
     @Inject(method = "setupMouseCallbacks", at = @At("HEAD"), cancellable = true)
     private static void mockMouseCallbacks(
-        long window,
+        Window window,
         GLFWCursorPosCallbackI cursorPositionCallback,
         GLFWMouseButtonCallbackI mouseButtonCallback,
         GLFWScrollCallbackI scrollCallback,
