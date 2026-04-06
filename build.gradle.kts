@@ -1,6 +1,6 @@
 plugins {
     id("io.github.gaming32.gradle.preprocess-root") version "0.4.5"
-    id("dev.architectury.loom") version "1.15.5" apply false
+    id("dev.architectury.loom") version "1.11.448" apply false
     id("com.modrinth.minotaur") version "2.8.7" apply false
 }
 
