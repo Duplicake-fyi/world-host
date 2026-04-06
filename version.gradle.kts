@@ -20,6 +20,10 @@ val loaderName by extra(name.substringAfter("-"))
 
 val isFabric = loaderName == "fabric"
 val isNeoForge = loaderName == "neoforge"
+val enableDevAuth = providers.gradleProperty("worldHost.enableDevAuth")
+    .map(String::toBoolean)
+    .orElse(!providers.environmentVariable("CI").isPresent)
+    .get()
 
 base.archivesName.set(rootProject.name)
 
@@ -129,11 +133,13 @@ dependencies {
         modImplementation("com.terraformersmc:modmenu:17.0.0")
     }
 
-    when {
-        isFabric -> "fabric"
-        isNeoForge -> "neoforge"
-        else -> null
-    }?.let { modRuntimeOnly("me.djtheredstoner:DevAuth-$it:1.2.1") }
+    if (enableDevAuth) {
+        when {
+            isFabric -> "fabric"
+            isNeoForge -> "neoforge"
+            else -> null
+        }?.let { modRuntimeOnly("me.djtheredstoner:DevAuth-$it:1.2.1") }
+    }
 
     if (isFabric) {
         val fapiVersion = "0.139.5+1.21.11"
