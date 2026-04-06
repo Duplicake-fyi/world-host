@@ -1,9 +1,9 @@
 //#if FABRIC
 package io.github.gaming32.worldhost.mixin.modmenu;
 
-import com.terraformersmc.modmenu.event.ModMenuEventHandler;
 import io.github.gaming32.worldhost.gui.widget.OnlineStatusButton;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Pseudo;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -14,7 +14,8 @@ import net.minecraft.client.gui.layouts.LayoutElement;
 //$$ import net.minecraft.client.gui.components.AbstractWidget;
 //#endif
 
-@Mixin(value = ModMenuEventHandler.class, remap = false)
+@Pseudo
+@Mixin(targets = "com.terraformersmc.modmenu.event.ModMenuEventHandler", remap = false)
 public class MixinModMenuEventHandler {
     //#if MC >= 1.19.4
     @Inject(method = "shiftButtons", at = @At("HEAD"), cancellable = true, require = 0)

@@ -15,7 +15,6 @@ import io.github.gaming32.worldhost.gui.OnlineStatusLocation;
 import io.github.gaming32.worldhost.gui.screen.FriendsScreen;
 import io.github.gaming32.worldhost.gui.screen.JoiningWorldHostScreen;
 import io.github.gaming32.worldhost.gui.screen.OnlineFriendsScreen;
-import io.github.gaming32.worldhost.mixin.MinecraftAccessor;
 import io.github.gaming32.worldhost.origincheck.OriginCheckers;
 import io.github.gaming32.worldhost.plugin.FriendAdder;
 import io.github.gaming32.worldhost.plugin.InfoTextsCategory;

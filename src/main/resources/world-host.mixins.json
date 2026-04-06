@@ -2,6 +2,9 @@
   "required": true,
   "minVersion": "0.8",
   "package": "io.github.gaming32.worldhost.mixin",
+  //#if FABRIC
+  "plugin": "io.github.gaming32.worldhost.mixin.WorldHostMixinPlugin",
+  //#endif
   "compatibilityLevel": "JAVA_17",
   "mixins": [
     "MixinCommands",
@@ -15,7 +18,6 @@
   ],
   "client": [
     "DisconnectedScreenAccessor",
-    "MinecraftAccessor",
     "MixinConnectScreen",
     "MixinConnectScreen_1",
     "MixinGameRenderer",
