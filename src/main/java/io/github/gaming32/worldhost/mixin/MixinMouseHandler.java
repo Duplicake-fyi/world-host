@@ -5,6 +5,7 @@ import com.mojang.blaze3d.platform.Window;
 import io.github.gaming32.worldhost.toast.WHToast;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.MouseHandler;
+import net.minecraft.client.input.MouseButtonInfo;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -20,22 +21,14 @@ public class MixinMouseHandler {
 
     @Shadow private double ypos;
 
-    @Inject(
-        method = "onPress",
-        at = @At(
-            value = "FIELD",
-            target = "Lnet/minecraft/client/Minecraft;screen:Lnet/minecraft/client/gui/screens/Screen;",
-            ordinal = 0
-        ),
-        cancellable = true
-    )
-    private void toastClick(long windowPointer, int button, int action, int modifiers, CallbackInfo ci) {
+    @Inject(method = "onButton", at = @At("HEAD"), cancellable = true)
+    private void toastClick(long windowPointer, MouseButtonInfo button, int action, CallbackInfo ci) {
         if (action != InputConstants.PRESS) return;
         final Window window = minecraft.getWindow();
         if (WHToast.click(
             xpos * window.getGuiScaledWidth() / window.getScreenWidth(),
             ypos * window.getGuiScaledHeight() / window.getScreenHeight(),
-            button
+            button.button()
         )) {
             ci.cancel();
         }
