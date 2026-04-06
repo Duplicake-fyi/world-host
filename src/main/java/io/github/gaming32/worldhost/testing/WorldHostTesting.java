@@ -129,10 +129,27 @@ public class WorldHostTesting {
             .then(FriendsScreen.class, () -> click(findWidgetByTranslation("world-host.add_friend")))
             .then(AddFriendScreen.class, () -> {
                 enterText(findWidgetByTranslation("world-host.add_friend.enter_username"), "o:" + user + getUsernameSuffix());
-                click(findWidgetByComponent(AddFriendScreen.ADD_FRIEND_SILENT_TEXT));
+                waitForWidgetAndClick(AddFriendScreen.ADD_FRIEND_SILENT_TEXT, 0L);
             })
             .then(FriendsScreen.class, () -> click(findWidgetByTranslation("gui.done")))
             .then(WorldHostConfigScreen.class, () -> click(findWidgetByTranslation("gui.done")));
+    }
+
+    private static void waitForWidgetAndClick(Component component, long timeSpent) {
+        final String text = component.getString();
+        final var widget = allGuiElements()
+            .filter(net.minecraft.client.gui.components.AbstractWidget.class::isInstance)
+            .map(net.minecraft.client.gui.components.AbstractWidget.class::cast)
+            .filter(w -> text.equals(w.getMessage().getString()))
+            .findFirst();
+        if (widget.isPresent()) {
+            click(widget.get());
+            return;
+        }
+        if (timeSpent > TIMEOUT) {
+            throw new IllegalStateException("Timed out waiting for widget with text \"" + text + "\"");
+        }
+        sleep(100, () -> waitForWidgetAndClick(component, timeSpent + 100));
     }
 
     private static String getUsernameSuffix() {
