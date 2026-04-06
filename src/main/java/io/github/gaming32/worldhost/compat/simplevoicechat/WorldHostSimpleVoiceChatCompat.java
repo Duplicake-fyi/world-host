@@ -17,6 +17,7 @@ import java.net.InetSocketAddress;
 import java.util.Optional;
 
 //#if NEOFORGE
+//$$ import de.maxhenkel.voicechat.api.NeoforgeVoicechatPlugin;
 //$$ @NeoforgeVoicechatPlugin
 //#endif
 public class WorldHostSimpleVoiceChatCompat implements VoicechatPlugin {

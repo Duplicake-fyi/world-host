@@ -238,7 +238,10 @@ public class WorldHost
     //$$
     //$$ private void forgeInit(ModContainer container) {
     //$$     final var modFile = container.getModInfo().getOwningFile().getFile();
-    //$$     init(path -> modFile.findResource(path.split("/")), modFile.getFilePath());
+    //$$     init(
+    //$$         path -> Path.of(modFile.getContents().findFile(path).orElseThrow(() -> new NoSuchFileException(path))),
+    //$$         modFile.getFilePath()
+    //$$     );
     //$$ }
     //#endif
 
@@ -485,7 +488,7 @@ public class WorldHost
         //$$                 return (WorldHostPlugin)Class.forName(ad.clazz().getClassName()).getDeclaredConstructor().newInstance();
         //$$             } catch (ReflectiveOperationException e) {
         //$$                 throw new IllegalStateException(
-        //$$                     "World Host plugin from " + modFile.moduleName() + " failed to load",
+        //$$                     "World Host plugin from " + modFile.getMods().getFirst().getModId() + " failed to load",
         //$$                     e instanceof InvocationTargetException target ? target.getTargetException() : e
         //$$                 );
         //$$             }
