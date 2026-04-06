@@ -124,6 +124,7 @@ import net.fabricmc.loader.api.FabricLoader;
 //$$ import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 
 //$$ @Mod(WorldHost.MOD_ID)
+//#endif
 public class WorldHost
     //#if FABRIC
     implements ClientModInitializer
