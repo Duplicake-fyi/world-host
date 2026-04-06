@@ -12,7 +12,7 @@ import java.util.function.Consumer;
 import net.minecraft.network.chat.Component;
 
 /**
- * World Host plugin entrypoint class. On Forge and NeoForge, annotate your implementation with {@link Entrypoint}. On
+ * World Host plugin entrypoint class. On NeoForge, annotate your implementation with {@link Entrypoint}. On
  * Fabric, reference this class with the <a href="https://fabricmc.net/wiki/documentation:entrypoint">entrypoint</a>
  * {@code worldhost}.
  */
@@ -68,7 +68,7 @@ public interface WorldHostPlugin {
     }
 
     /**
-     * World Host plugin entrypoint class marker. This is used on Forge and NeoForge. On Fabric, use the
+     * World Host plugin entrypoint class marker. This is used on NeoForge. On Fabric, use the
      * <a href="https://fabricmc.net/wiki/documentation:entrypoint">entrypoint system</a>.
      */
     @Retention(RetentionPolicy.RUNTIME)

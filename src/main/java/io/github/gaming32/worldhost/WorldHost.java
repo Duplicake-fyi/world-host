@@ -114,56 +114,29 @@ import net.fabricmc.loader.api.FabricLoader;
 //$$ import java.util.Objects;
 //$$ import java.util.function.BiConsumer;
 //$$ import org.objectweb.asm.Type;
-//#if FORGE
-//$$ import net.minecraftforge.fml.ModContainer;
-//$$ import net.minecraftforge.fml.ModList;
-//$$ import net.minecraftforge.fml.ModLoadingContext;
-//$$ import net.minecraftforge.fml.common.Mod;
-//$$ import net.minecraftforge.fml.loading.FMLPaths;
-//$$ import net.minecraftforge.fml.loading.LoadingModList;
-//$$ import net.minecraftforge.internal.BrandingControl;
-//#else
 //$$ import net.neoforged.fml.ModContainer;
 //$$ import net.neoforged.fml.ModList;
 //$$ import net.neoforged.fml.common.Mod;
 //$$ import net.neoforged.fml.loading.FMLPaths;
 //$$ import net.neoforged.neoforge.internal.BrandingControl;
-//#endif
-//#if MC >= 1.21.5
 //$$ import net.neoforged.bus.api.IEventBus;
 //$$ import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
-//#endif
-//#if MC >= 1.20.5
 //$$ import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
-//#elseif NEOFORGE
-//$$ import net.neoforged.neoforge.client.ConfigScreenHandler;
-//#else
-//$$ import net.minecraftforge.client.ConfigScreenHandler;
-//#endif
-//#endif
 
-//#if FORGELIKE
 //$$ @Mod(WorldHost.MOD_ID)
-//#endif
 public class WorldHost
     //#if FABRIC
     implements ClientModInitializer
     //#endif
 {
     public static final String MOD_ID =
-        //#if FORGELIKE
         //$$ "world_host";
-        //#else
-        "world-host";
-        //#endif
 
     public static final Logger LOGGER = LogUtils.getLogger();
 
     public static final Loader MOD_LOADER =
         //#if NEOFORGE
         //$$ Loader.NEOFORGE;
-        //#elseif FORGE
-        //$$ Loader.FORGE;
         //#else
         Loader.FABRIC;
         //#endif
@@ -249,32 +222,15 @@ public class WorldHost
     }
     //#else
     //$$ public WorldHost(
-        //#if NEOFORGE
         //$$ ModContainer container
-        //#if MC >= 1.21.5
         //$$ , IEventBus modBus
-        //#endif
-        //#endif
     //$$ ) {
-        //#if FORGE
-        //$$ final ModContainer container = ModLoadingContext.get().getActiveContainer();
-        //#endif
-        //#if MC >= 1.21.5
         //$$ modBus.addListener(FMLClientSetupEvent.class, event -> forgeInit(container));
-        //#else
-        //$$ forgeInit(container);
-        //#endif
     //$$     container.registerExtensionPoint(
-            //#if MC >= 1.20.5
             //$$ IConfigScreenFactory.class, (ignored, screen) -> new WorldHostConfigScreen(screen)
-            //#else
-            //$$ ConfigScreenHandler.ConfigScreenFactory.class,
-            //$$ () -> new ConfigScreenHandler.ConfigScreenFactory((ignored, screen) -> new WorldHostConfigScreen(screen))
-            //#endif
     //$$     );
     //$$ }
     //$$
-    //$$ // TODO: Merge this back in when 1.21.5 becomes the minimum
     //$$ private void forgeInit(ModContainer container) {
     //$$     final var modFile = container.getModInfo().getOwningFile().getFile();
     //$$     init(path -> modFile.findResource(path.split("/")), modFile.getFilePath());
@@ -840,11 +796,7 @@ public class WorldHost
         //#if MC >= 1.19.4
         return new ServerStatus(
             CommonComponents.EMPTY, Optional.empty(), Optional.empty(), Optional.empty(), false
-            //#if FORGELIKE && MC < 1.20.4
-            //$$ , Optional.empty()
-            //#elseif NEOFORGE
             //$$ , false
-            //#endif
         );
         //#else
         //$$ return new ServerStatus();

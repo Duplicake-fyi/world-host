@@ -1,7 +1,7 @@
 package io.github.gaming32.worldhost.compat.simplevoicechat;
 
 import de.maxhenkel.voicechat.Voicechat;
-import de.maxhenkel.voicechat.api.ForgeVoicechatPlugin;
+import de.maxhenkel.voicechat.api.NeoforgeVoicechatPlugin;
 import de.maxhenkel.voicechat.api.VoicechatPlugin;
 import de.maxhenkel.voicechat.api.events.ClientVoicechatInitializationEvent;
 import de.maxhenkel.voicechat.api.events.EventRegistration;
@@ -17,7 +17,7 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.Optional;
 
-@ForgeVoicechatPlugin
+@NeoforgeVoicechatPlugin
 public class WorldHostSimpleVoiceChatCompat implements VoicechatPlugin {
     public static final WorldHostClientVoicechatSocket CLIENT_SOCKET = new WorldHostClientVoicechatSocket();
 
