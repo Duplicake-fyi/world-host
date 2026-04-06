@@ -130,7 +130,11 @@ public class WorldHost
     //#endif
 {
     public static final String MOD_ID =
+        //#if FABRIC
+        "world-host";
+        //#else
         //$$ "world_host";
+        //#endif
 
     public static final Logger LOGGER = LogUtils.getLogger();
 
