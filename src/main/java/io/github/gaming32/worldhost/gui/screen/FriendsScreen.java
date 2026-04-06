@@ -7,8 +7,7 @@ import io.github.gaming32.worldhost.plugin.FriendListFriend;
 import io.github.gaming32.worldhost.plugin.InfoTextsCategory;
 import io.github.gaming32.worldhost.plugin.ProfileInfo;
 import io.github.gaming32.worldhost.versions.WorldHostRenderSystem;
-import net.minecraft.client.input.MouseButtonEvent;
-import net.minecraft.util.Util;
+import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.ObjectSelectionList;
@@ -200,14 +199,14 @@ public class FriendsScreen extends ScreenWithInfoTexts {
         }
 
         @Override
-        public void renderContent(
+        public void render(
             @NotNull
             //#if MC < 1.20.0
             //$$ PoseStack context,
             //#else
             GuiGraphics context,
             //#endif
-            int x, int y, boolean hovered, float tickDelta
+            int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta
         ) {
             //#if MC < 1.21.2
             //$$ RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
@@ -231,9 +230,9 @@ public class FriendsScreen extends ScreenWithInfoTexts {
         }
 
         @Override
-        public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+        public boolean mouseClicked(double mouseX, double mouseY, int button) {
             FriendsScreen.this.list.setSelected(this);
-            if (doubleClick || Util.getMillis() - clickTime < 250L) {
+            if (Util.getMillis() - clickTime < 250L) {
                 friend.showFriendInfo(FriendsScreen.this);
                 clickTime = Util.getMillis();
                 return true;

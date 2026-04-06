@@ -1,9 +1,11 @@
 package io.github.gaming32.worldhost.compat.simplevoicechat;
 
+import de.maxhenkel.voicechat.Voicechat;
 import de.maxhenkel.voicechat.api.ForgeVoicechatPlugin;
 import de.maxhenkel.voicechat.api.VoicechatPlugin;
 import de.maxhenkel.voicechat.api.events.ClientVoicechatInitializationEvent;
 import de.maxhenkel.voicechat.api.events.EventRegistration;
+import de.maxhenkel.voicechat.voice.server.Server;
 import io.github.gaming32.worldhost.WorldHost;
 import io.github.gaming32.worldhost.ext.ServerDataExt;
 import io.github.gaming32.worldhost.protocol.punch.PunchManager;
@@ -41,6 +43,16 @@ public class WorldHostSimpleVoiceChatCompat implements VoicechatPlugin {
     }
 
     public static Optional<PunchTransmitter> getServerTransmitter() {
-        return Optional.empty();
+        return Optional.ofNullable(Voicechat.SERVER.getServer())
+            .map(Server::getSocket)
+            .map(socket -> (packet, address) -> {
+                try {
+                    socket.send(packet, address);
+                } catch (IOException | RuntimeException e) {
+                    throw e;
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            });
     }
 }

@@ -1,13 +1,13 @@
 package io.github.gaming32.worldhost.gui.screen;
 
-import com.mojang.blaze3d.pipeline.RenderPipeline;
+import com.mojang.blaze3d.vertex.PoseStack;
 import io.github.gaming32.worldhost.versions.ButtonBuilder;
-import org.joml.Matrix3x2fStack;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.components.AbstractSelectionList;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -25,10 +25,8 @@ import net.minecraft.client.gui.GuiGraphics;
 //#endif
 
 //#if MC >= 1.21.2
-import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.client.renderer.RenderType;
 //#endif
-
-import net.minecraft.resources.Identifier;
 
 import net.minecraft.util.FormattedCharSequence;
 
@@ -104,11 +102,21 @@ public abstract class WorldHostScreen extends Screen {
         //#else
         GuiGraphics context,
         //#endif
-        @NotNull List<Component> tooltips, int mouseX, int mouseY
+        @NotNull List<? extends FormattedCharSequence> tooltips, int mouseX, int mouseY
     ) {
-        // TODO: Update for 1.21.11 - tooltip rendering changed
-        // For now, don't render tooltips from this method
-        // In 1.21.11, tooltips are rendered differently
+        //#if MC >= 1.20.0
+        context.renderTooltip
+        //#else
+        //$$ super.renderTooltip
+        //#endif
+            (
+                //#if MC < 1.20.0
+                //$$ context,
+                //#else
+                font,
+                //#endif
+                tooltips, mouseX, mouseY
+            );
     }
 
     public static void drawString(
@@ -142,8 +150,7 @@ public abstract class WorldHostScreen extends Screen {
         //#else
         GuiGraphics context,
         //#endif
-        Identifier texture,
-        int x, int y, float uOffset, float vOffset, int width, int height, int uWidth, int vHeight, int textureWidth, int textureHeight
+        ResourceLocation texture, int x, int y, float uOffset, float vOffset, int width, int height, int uWidth, int vHeight, int textureWidth, int textureHeight
     ) {
         //#if MC >= 1.20.0
         context.
@@ -153,7 +160,7 @@ public abstract class WorldHostScreen extends Screen {
         //#endif
         blit(
             //#if MC >= 1.21.2
-            RenderPipelines.GUI_TEXTURED,
+            RenderType::guiTextured,
             //#endif
             //#if MC < 1.20.0
             //$$ context,
@@ -177,8 +184,7 @@ public abstract class WorldHostScreen extends Screen {
         //#else
         GuiGraphics context,
         //#endif
-        Identifier texture,
-        int x, int y, float uOffset, float vOffset, int width, int height, int textureWidth, int textureHeight
+        ResourceLocation texture, int x, int y, float uOffset, float vOffset, int width, int height, int textureWidth, int textureHeight
     ) {
         //#if MC >= 1.20.0
         context.
@@ -188,7 +194,7 @@ public abstract class WorldHostScreen extends Screen {
         //#endif
         blit(
             //#if MC >= 1.21.2
-            RenderPipelines.GUI_TEXTURED,
+            RenderType::guiTextured,
             //#endif
             //#if MC < 1.20.0
             //$$ context,
@@ -200,14 +206,10 @@ public abstract class WorldHostScreen extends Screen {
     }
 
     //#if MC >= 1.20.2
-    public static void blitSprite(
-        GuiGraphics graphics,
-        Identifier sprite,
-        int x, int y, int width, int height
-    ) {
+    public static void blitSprite(GuiGraphics graphics, ResourceLocation sprite, int x, int y, int width, int height) {
         graphics.blitSprite(
             //#if MC >= 1.21.2
-            RenderPipelines.GUI_TEXTURED,
+            RenderType::guiTextured,
             //#endif
             sprite, x, y, width, height
         );
@@ -295,7 +297,7 @@ public abstract class WorldHostScreen extends Screen {
         );
     }
 
-    public static Matrix3x2fStack pose(
+    public static PoseStack pose(
         @NotNull
         //#if MC < 1.20.0
         //$$ PoseStack context

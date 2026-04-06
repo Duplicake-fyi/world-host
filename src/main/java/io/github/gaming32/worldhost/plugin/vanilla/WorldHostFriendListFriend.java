@@ -18,7 +18,7 @@ public record WorldHostFriendListFriend(
     }
 
     public WorldHostFriendListFriend(GameProfile profile) {
-        this(profile.id(), profile);
+        this(profile.getId(), profile);
     }
 
     @Override

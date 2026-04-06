@@ -33,13 +33,6 @@ val mcVersion by extra(mcVersionString.split(".").map { it.toInt() }
         it[0] * 1_00_00 + it[1] * 1_00 + it.getOrElse(2) { 0 }
     })
 
-val targetJava = when {
-    mcVersion >= 26_01_00 -> JavaVersion.toVersion(25)
-    mcVersion >= 1_20_06 -> JavaVersion.VERSION_21
-    mcVersion >= 1_18_00 -> JavaVersion.VERSION_17
-    else -> throw IllegalStateException("Unknown Java version for $mcVersionString")
-}
-
 println("MC_VERSION: $mcVersionString $mcVersion")
 version = "${modVersion}+${mcVersionString}-${loaderName}"
 
@@ -51,19 +44,21 @@ repositories {
 }
 
 java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(targetJava.majorVersion.toInt())
-    }
     withSourcesJar()
-    sourceCompatibility = targetJava
-    targetCompatibility = targetJava
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
 }
 
 tasks.compileJava {
-    options.release = targetJava.majorVersion.toInt()
+    options.release = 21
     options.compilerArgs.add("-Xlint:all")
 }
 
+val targetJava = when {
+    mcVersion >= 1_20_06 -> JavaVersion.VERSION_21
+    mcVersion >= 1_18_00 -> JavaVersion.VERSION_17
+    else -> throw IllegalStateException("Unknown Java version for $mcVersionString")
+}
 if (targetJava < java.sourceCompatibility) {
     println("Classes need downgrading to Java $targetJava")
 
@@ -101,11 +96,11 @@ loom {
         }
         remove(getByName("server"))
 
-        val usernameSuffix = Collections.list(NetworkInterface.getNetworkInterfaces())
-            .firstNotNullOfOrNull { it.hardwareAddress?.takeIf { address -> address.isNotEmpty() } }
-            ?.toHexString()
-            ?.take(10)
-            ?: "0000000000"
+        val usernameSuffix = NetworkInterface.getNetworkInterfaces()
+            .nextElement()
+            .hardwareAddress
+            .toHexString()
+            .substring(0, 10)
         for (name in listOf("Host", "Joiner")) {
             val runName = "test$name"
             val user = name.uppercase()
@@ -155,28 +150,22 @@ dependencies {
         officialMojangMappings {
             nameSyntheticMembers = true
         }
-        if (mcVersion < 1_21_11) {
-            when {
-                mcVersion >= 1_21_04 -> "1.21.4:2025.03.23"
-                mcVersion >= 1_21_03 -> "1.21.3:2024.12.07"
-                mcVersion >= 1_21_01 -> "1.21.1:2024.11.17"
-                mcVersion >= 1_20_04 -> "1.20.4:2024.04.14"
-                mcVersion >= 1_20_01 -> "1.20.1:2023.09.03"
-                mcVersion >= 1_19_04 -> "1.19.4:2023.06.26"
-                mcVersion >= 1_19_02 -> "1.19.2:2022.11.27"
-                else -> null
-            }?.let {
-                parchment("org.parchmentmc.data:parchment-$it@zip")
-            }
+        when {
+            mcVersion >= 1_21_04 -> "1.21.4:2025.03.23"
+            mcVersion >= 1_21_03 -> "1.21.3:2024.12.07"
+            mcVersion >= 1_21_01 -> "1.21.1:2024.11.17"
+            mcVersion >= 1_20_04 -> "1.20.4:2024.04.14"
+            mcVersion >= 1_20_01 -> "1.20.1:2023.09.03"
+            mcVersion >= 1_19_04 -> "1.19.4:2023.06.26"
+            mcVersion >= 1_19_02 -> "1.19.2:2022.11.27"
+            else -> null
+        }?.let {
+            parchment("org.parchmentmc.data:parchment-$it@zip")
         }
     })
 
     when {
-        isFabric ->
-            when {
-                mcVersion >= 1_21_11 -> "0.18.1"
-                else -> "0.16.10"
-            }.let { modImplementation("net.fabricmc:fabric-loader:$it") }
+        isFabric -> modImplementation("net.fabricmc:fabric-loader:0.16.10")
         isForge ->
             when (mcVersion) {
                 1_20_01 -> "47.1.3"
@@ -186,7 +175,7 @@ dependencies {
             }.let { "forge"("net.minecraftforge:forge:$mcVersionString-$it") }
         isNeoForge ->
             when (mcVersion) {
-                1_21_11 -> "21.11.13-beta"
+                1_21_05 -> "21.5.26-beta"
                 1_21_04 -> "21.4.121"
                 1_21_03 -> "21.3.56"
                 1_21_01 -> "21.1.1"
@@ -202,7 +191,7 @@ dependencies {
 
     if (isFabric) {
         when (mcVersion) {
-            1_21_11 -> "maven.modrinth:modmenu:16.0.0"
+            1_21_05 -> "14.0.0-rc.2"
             1_21_04 -> "13.0.3"
             1_21_03 -> "12.0.0"
             1_21_01 -> "11.0.3"
@@ -212,9 +201,7 @@ dependencies {
             1_19_02 -> "4.2.0-beta.2"
             else -> null
         }?.let {
-            modImplementation(
-                if (mcVersion >= 1_21_11) it else "com.terraformersmc:modmenu:$it"
-            )
+            modImplementation("com.terraformersmc:modmenu:$it")
         }
     }
 
@@ -227,7 +214,7 @@ dependencies {
 
     if (isFabric) {
         when (mcVersion) {
-            1_21_11 -> "0.141.1+1.21.11"
+            1_21_05 -> "0.119.9+1.21.5"
             1_21_04 -> "0.119.2+1.21.4"
             1_21_03 -> "0.114.0+1.21.3"
             1_21_01 -> "0.115.3+1.21.1"
@@ -256,9 +243,15 @@ dependencies {
         }
     }
 
+    if (mcVersion >= 1_20_04 && isFabric) {
+        modCompileOnly("de.florianmichael:viafabricplus:3.0.2") {
+            isTransitive = false
+        }
+    }
+
     compileOnly("de.maxhenkel.voicechat:voicechat-api:2.5.0")
     when (mcVersion) {
-        1_21_11 -> null
+        1_21_05 -> "2.5.28"
         1_21_04 -> "2.5.28"
         1_21_03 -> "2.5.28"
         1_21_01 -> "2.5.28"
@@ -301,13 +294,13 @@ modrinth {
     token.set(project.properties["modrinth.token"] as String? ?: System.getenv("MODRINTH_TOKEN"))
     projectId.set(if (isStaging) "world-host-staging" else "world-host")
     versionNumber.set(version.toString())
-    val loaderDisplayName = when {
+    val loaderName = when {
         isFabric -> "Fabric"
         isForge -> "Forge"
         isNeoForge -> "NeoForge"
         else -> throw IllegalStateException()
     }
-    versionName.set("[$loaderDisplayName $mcVersionString] World Host $modVersion")
+    versionName.set("[$loaderName $mcVersionString] World Host $modVersion")
     uploadFile.set(tasks.named("remapJar"))
     additionalFiles.add(tasks.named("sourcesJar"))
     gameVersions.add(mcVersionString)
@@ -317,10 +310,9 @@ modrinth {
         1_20_04 -> "1.20.3"
         1_21_01 -> "1.21"
         1_21_03 -> "1.21.2"
-        1_21_11 -> "1.21.10"
         else -> null
     }?.let(gameVersions::add)
-    loaders.add(loaderName)
+    loaders.add(this@Version_gradle.loaderName)
     dependencies {
         if (isFabric) {
             optional.project("modmenu")
@@ -340,7 +332,6 @@ tasks.processResources {
     // TODO: Remove pack.mcmeta in 1.20.4
     filesMatching("pack.mcmeta") {
         expand("pack_format" to when {
-            mcVersion >= 1_21_11 -> 55
             mcVersion >= 1_21_05 -> 55
             mcVersion >= 1_21_04 -> 46
             mcVersion >= 1_21_02 -> 42

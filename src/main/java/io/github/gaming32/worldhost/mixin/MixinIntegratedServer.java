@@ -1,5 +1,6 @@
 package io.github.gaming32.worldhost.mixin;
 
+import com.mojang.datafixers.DataFixer;
 import io.github.gaming32.worldhost.WorldHost;
 import io.github.gaming32.worldhost.proxy.ProxyChannels;
 import io.github.gaming32.worldhost.proxy.ProxyClient;
@@ -8,8 +9,13 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.server.IntegratedServer;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.network.ServerConnectionListener;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.Services;
+import net.minecraft.server.WorldStem;
+import net.minecraft.server.level.progress.ChunkProgressListenerFactory;
+import net.minecraft.server.packs.repository.PackRepository;
 import net.minecraft.util.HttpUtil;
+import net.minecraft.world.level.storage.LevelStorageSource;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -19,13 +25,26 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin(IntegratedServer.class)
-public abstract class MixinIntegratedServer {
-    @Shadow @Final private Minecraft minecraft;
-    @Shadow private int publishedPort;
+import java.net.Proxy;
 
-    @Shadow public abstract boolean isPublished();
-    @Shadow public abstract ServerConnectionListener getConnection();
+@Mixin(IntegratedServer.class)
+public abstract class MixinIntegratedServer extends MinecraftServer {
+    public MixinIntegratedServer(
+        Thread thread,
+        LevelStorageSource.LevelStorageAccess levelStorageAccess,
+        PackRepository packRepository,
+        WorldStem worldStem,
+        Proxy proxy,
+        DataFixer dataFixer,
+        Services services,
+        ChunkProgressListenerFactory chunkProgressListenerFactory
+    ) {
+        super(thread, levelStorageAccess, packRepository, worldStem, proxy, dataFixer, services, chunkProgressListenerFactory);
+    }
+
+    @Shadow @Final private Minecraft minecraft;
+
+    @Shadow private int publishedPort;
 
     @Inject(method = "publishServer", at = @At(value = "RETURN", ordinal = 0))
     private void serverIsOpen(CallbackInfoReturnable<Boolean> cir) {
@@ -47,10 +66,13 @@ public abstract class MixinIntegratedServer {
     private void shareWorldOnLoad(CallbackInfo ci) {
         if (!WorldHost.shareWorldOnLoad) return;
         WorldHost.shareWorldOnLoad = false;
-        final var server = (IntegratedServer)(Object)this;
-        final boolean allowCommands = server.getWorldData().isAllowCommands();
+        //#if MC < 1.20.5
+        //$$ final boolean allowCommands = worldData.getAllowCommands();
+        //#else
+        final boolean allowCommands = worldData.isAllowCommands();
+        //#endif
         final Component message;
-        if (server.publishServer(server.getWorldData().getGameType(), allowCommands, HttpUtil.getAvailablePort())) {
+        if (publishServer(worldData.getGameType(), allowCommands, HttpUtil.getAvailablePort())) {
             message = wh$getOpenedMessage();
         } else {
             message = Component.translatable("world-host.share_world.failed").withStyle(ChatFormatting.RED);

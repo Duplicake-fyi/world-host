@@ -8,7 +8,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.components.PlainTextButton;
 import net.minecraft.client.gui.screens.Screen;
-import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentUtils;
 import net.minecraft.network.chat.Style;
@@ -44,9 +43,14 @@ public final class OnlineStatusButton extends PlainTextButton {
 
     public OnlineStatusButton(int alignedX, int y, int height, boolean rightAlign, Font font) {
         super(alignedX, y, 0, height, generateStatusComponent(), b -> {
-            // TODO: Update for 1.21.11 - check shift key state
-            // For now, always reconnect
-            WorldHost.reconnect(true, true);
+            if (Screen.hasShiftDown()) {
+                if (getStatus() != 1) {
+                    WorldHost.reconnect(true, true);
+                }
+            } else {
+                final Minecraft minecraft = Minecraft.getInstance();
+                minecraft.setScreen(new WorldHostConfigScreen(minecraft.screen));
+            }
         }, font);
         this.alignedX = alignedX;
         this.font = font;
@@ -82,7 +86,21 @@ public final class OnlineStatusButton extends PlainTextButton {
     }
 
     @Override
-    public void renderContents(@NotNull GuiGraphics context, int i, int j, float f) {
+    public void
+    //#if MC >= 1.19.4
+    renderWidget
+    //#else
+    //$$ renderButton
+    //#endif
+        (
+            @NotNull
+            //#if MC < 1.20.0
+            //$$ PoseStack context,
+            //#else
+            GuiGraphics context,
+            //#endif
+            int i, int j, float f
+        ) {
         final int status = getStatus();
         if (status != currentStatus || (status == 0 && (WorldHost.reconnectDelay + 1) % 20 == 0)) {
             currentStatus = status;
@@ -94,7 +112,13 @@ public final class OnlineStatusButton extends PlainTextButton {
             setWidth(font.width(message));
             updateX();
         }
-        super.renderContents(context, i, j, f);
+        super.
+            //#if MC >= 1.19.4
+            renderWidget
+            //#else
+            //$$ renderButton
+            //#endif
+                (context, i, j, f);
     }
 
     @Override

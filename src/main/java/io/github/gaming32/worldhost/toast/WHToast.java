@@ -1,6 +1,7 @@
 package io.github.gaming32.worldhost.toast;
 
 import com.demonwav.mcdev.annotations.Translatable;
+import com.mojang.blaze3d.vertex.PoseStack;
 import io.github.gaming32.worldhost.ResourceLocations;
 import io.github.gaming32.worldhost.gui.screen.WorldHostScreen;
 import io.github.gaming32.worldhost.testing.WorldHostTesting;
@@ -108,9 +109,9 @@ public class WHToast {
     ) {
         if (!ready) return;
 
-        final var poseStack = WorldHostScreen.pose(context);
-        poseStack.pushMatrix();
-        poseStack.translate(0f, 0f);
+        final PoseStack poseStack = WorldHostScreen.pose(context);
+        poseStack.pushPose();
+        poseStack.translate(0f, 0f, 100f);
 
         final var window = Minecraft.getInstance().getWindow();
         final int screenWidth = window.getGuiScaledWidth();
@@ -125,7 +126,7 @@ public class WHToast {
             );
         }
 
-        poseStack.popMatrix();
+        poseStack.popPose();
     }
 
     public static boolean click(double mouseX, double mouseY, int button) {

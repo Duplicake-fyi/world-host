@@ -18,7 +18,7 @@ public class MixinPlayerList {
     @Inject(method = "isWhiteListed", at = @At("HEAD"), cancellable = true)
     private void whitelistFriends(GameProfile profile, CallbackInfoReturnable<Boolean> cir) {
         if (!WorldHost.CONFIG.isWhitelistJoins()) return;
-        if (!profile.id().equals(WorldHost.getUserId()) && !WorldHost.isFriend(profile.id())) {
+        if (!server.isSingleplayerOwner(profile) && !WorldHost.isFriend(profile.getId())) {
             cir.setReturnValue(false);
         }
     }

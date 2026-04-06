@@ -1,5 +1,6 @@
 package io.github.gaming32.worldhost.toast;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import io.github.gaming32.worldhost.gui.screen.WorldHostScreen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -101,7 +102,7 @@ class ToastInstance {
         //#endif
         float x, float y, int mouseX, int mouseY, float tickDelta
     ) {
-        final var poseStack = WorldHostScreen.pose(context);
+        final PoseStack poseStack = WorldHostScreen.pose(context);
 
         final float originalX = x;
 
@@ -119,24 +120,24 @@ class ToastInstance {
 
         fill(context, x, y, x + width, y + height, BACKGROUND_COLOR);
 
-        poseStack.pushMatrix();
-        poseStack.translate(x + BORDER_SIZE + (iconRenderer != null ? ICON_SIZE + BORDER_SIZE : 0), y + BORDER_SIZE);
+        poseStack.pushPose();
+        poseStack.translate(x + BORDER_SIZE + (iconRenderer != null ? ICON_SIZE + BORDER_SIZE : 0), y + BORDER_SIZE, 0);
         for (final var line : formattedTitle) {
             WorldHostScreen.drawString(context, font, line, 0, 0, TITLE_COLOR, false);
-            poseStack.translate(0f, font.lineHeight + LINE_BREAK);
+            poseStack.translate(0, font.lineHeight + LINE_BREAK, 0);
         }
-        poseStack.translate(0f, -LINE_BREAK + DESCRIPTION_BREAK);
+        poseStack.translate(0, -LINE_BREAK + DESCRIPTION_BREAK, 0);
         for (final var line : formattedDescription) {
             WorldHostScreen.drawString(context, font, line, 0, 0, DESCRIPTION_COLOR, false);
-            poseStack.translate(0f, font.lineHeight + LINE_BREAK);
+            poseStack.translate(0, font.lineHeight + LINE_BREAK, 0);
         }
-        poseStack.popMatrix();
+        poseStack.popPose();
 
         if (iconRenderer != null) {
-            poseStack.pushMatrix();
-            poseStack.translate(x, y);
+            poseStack.pushPose();
+            poseStack.translate(x, y, 0);
             iconRenderer.draw(context, BORDER_SIZE, BORDER_SIZE, ICON_SIZE, ICON_SIZE);
-            poseStack.popMatrix();
+            poseStack.popPose();
         }
 
         if (clickAction != null && ticksRemaining > 20) {
@@ -180,11 +181,11 @@ class ToastInstance {
         //#endif
         float minX, float minY, float maxX, float maxY, int color
     ) {
-        final var poseStack = WorldHostScreen.pose(context);
-        poseStack.pushMatrix();
-        poseStack.translate(minX, minY);
-        poseStack.scale(maxX - minX, maxY - minY);
+        final PoseStack poseStack = WorldHostScreen.pose(context);
+        poseStack.pushPose();
+        poseStack.translate(minX, minY, 0f);
+        poseStack.scale(maxX - minX, maxY - minY, 1f);
         WorldHostScreen.fill(context, 0, 0, 1, 1, color);
-        poseStack.popMatrix();
+        poseStack.popPose();
     }
 }

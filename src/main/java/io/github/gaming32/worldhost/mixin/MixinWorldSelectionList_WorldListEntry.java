@@ -1,9 +1,9 @@
 package io.github.gaming32.worldhost.mixin;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import io.github.gaming32.worldhost.WorldHost;
 import io.github.gaming32.worldhost.ext.SelectWorldScreenExt;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.worldselection.WorldSelectionList;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -24,8 +24,9 @@ public class MixinWorldSelectionList_WorldListEntry {
             if (((SelectWorldScreenExt)this$0.getScreen()).wh$shareButtonPressed()) {
                 WorldHost.shareWorldOnLoad = true;
             } else {
-                // TODO: Update for 1.21.11 - check shift key state
-                WorldHost.shareWorldOnLoad = false;
+                WorldHost.shareWorldOnLoad = InputConstants.isKeyDown(
+                    minecraft.getWindow().getWindow(), InputConstants.KEY_LSHIFT
+                );
             }
         } else {
             WorldHost.shareWorldOnLoad = false;

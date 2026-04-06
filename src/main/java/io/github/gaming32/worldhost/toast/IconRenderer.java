@@ -3,6 +3,7 @@ package io.github.gaming32.worldhost.toast;
 import io.github.gaming32.worldhost.gui.screen.WorldHostScreen;
 import io.github.gaming32.worldhost.versions.WorldHostRenderSystem;
 import java.util.function.Supplier;
+import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 
 //#if MC >= 1.20.0
@@ -10,8 +11,6 @@ import net.minecraft.client.gui.GuiGraphics;
 //#else
 //$$ import com.mojang.blaze3d.vertex.PoseStack;
 //#endif
-
-import net.minecraft.resources.Identifier;
 
 @FunctionalInterface
 public interface IconRenderer {
@@ -25,7 +24,7 @@ public interface IconRenderer {
         int x, int y, int width, int height
     );
 
-    static IconRenderer createSkinIconRenderer(Supplier<Identifier> skinTexture) {
+    static IconRenderer createSkinIconRenderer(Supplier<ResourceLocation> skinTexture) {
         return (context, x, y, width, height) -> {
             final var texture = skinTexture.get();
             WorldHostRenderSystem.enableBlend();

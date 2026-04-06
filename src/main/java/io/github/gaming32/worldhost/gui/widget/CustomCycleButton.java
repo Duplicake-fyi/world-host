@@ -1,16 +1,11 @@
 package io.github.gaming32.worldhost.gui.widget;
 
-import io.github.gaming32.worldhost.gui.screen.WorldHostScreen;
 import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
-import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.lwjgl.glfw.GLFW;
 
 import java.util.Map;
 import java.util.WeakHashMap;
@@ -18,6 +13,8 @@ import java.util.function.Consumer;
 
 //#if MC >= 1.19.4
 import net.minecraft.client.gui.components.Tooltip;
+//#else
+//$$ import io.github.gaming32.worldhost.gui.screen.WorldHostScreen;
 //#endif
 
 public abstract class CustomCycleButton<T, B extends CustomCycleButton<T, B>> extends Button {
@@ -50,10 +47,8 @@ public abstract class CustomCycleButton<T, B extends CustomCycleButton<T, B>> ex
         super(
             x, y, width, height, CommonComponents.EMPTY, b -> {
                 @SuppressWarnings("unchecked") final B cycle = (B)b;
-                // TODO: Update for 1.21.11 - check shift key state
-                // For now, assume shift isn't pressed (cycle forward only)
-                final int add = -1; // This will cycle forward since we're using floorMod with negative
-                cycle.setValueIndex(Math.floorMod(cycle.getValueIndex() + 1, cycle.getValues().length));
+                final int add = Screen.hasShiftDown() ? -1 : 1;
+                cycle.setValueIndex(Math.floorMod(cycle.getValueIndex() + add, cycle.getValues().length));
                 cycle.getOnUpdate().accept(cycle);
             },
             //#if MC >= 1.19.4
@@ -120,11 +115,4 @@ public abstract class CustomCycleButton<T, B extends CustomCycleButton<T, B>> ex
 
     @NotNull
     public abstract Component getValueMessage();
-
-    @Override
-    protected void renderContents(GuiGraphics context, int mouseX, int mouseY, float partialTick) {
-        final int color = active ? 0xffffff : 0xa0a0a0;
-        final int textY = getY() + (height - Minecraft.getInstance().font.lineHeight) / 2;
-        WorldHostScreen.drawCenteredString(context, Minecraft.getInstance().font, getMessage(), getX() + width / 2, textY, color);
-    }
 }

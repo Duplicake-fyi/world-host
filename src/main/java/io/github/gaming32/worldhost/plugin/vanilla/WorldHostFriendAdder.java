@@ -23,10 +23,10 @@ public class WorldHostFriendAdder implements FriendAdder {
     @Override
     public void searchFriends(String name, int maxResults, Consumer<FriendListFriend> friendConsumer) {
         if (VALID_USERNAME.matcher(name).matches()) {
-            // TODO: Implement profile lookup for 1.21.11 without GameProfileCache
-            // For now, create an offline profile
-            final var uuid = UUIDUtil.createOfflinePlayerUUID(name);
-            friendConsumer.accept(new WorldHostFriendListFriend(new GameProfile(uuid, name)));
+            WorldHost.getMaybeAsync(
+                WorldHost.getProfileCache(), name,
+                profile -> profile.map(WorldHostFriendListFriend::new).ifPresent(friendConsumer)
+            );
         } else if (VALID_UUID.matcher(name).matches()) {
             friendConsumer.accept(new WorldHostFriendListFriend(UUID.fromString(name)));
         } else if (name.startsWith("o:")) {

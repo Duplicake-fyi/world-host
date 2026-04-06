@@ -7,8 +7,20 @@ jobs:
       fail-fast: false
       matrix:
         subproject:
-          - 1.21.11-neoforge
-          - 1.21.11-fabric
+          - 1.17.1-forge
+          - 1.17.1-fabric
+          - 1.18.2-forge
+          - 1.18.2-fabric
+          - 1.19.2-forge
+          - 1.19.2-fabric
+          - 1.19.4-forge
+          - 1.19.4-fabric
+          - 1.20.1-forge
+          - 1.20.1-fabric
+          - 1.20.4-neoforge
+          - 1.20.4-fabric
+          - 1.20.6-neoforge
+          - 1.20.6-fabric
         side:
           - Host
           - Joiner

@@ -58,7 +58,7 @@ public class PlayerInfoScreen extends WorldHostScreen {
         int mouseX, int mouseY, float partialTick
     ) {
         whRenderBackground(context, mouseX, mouseY, partialTick);
-        drawCenteredString(context, font, profile.name(), width / 2, height / 2 + 85, 0xffffff);
+        drawCenteredString(context, font, profile.getName(), width / 2, height / 2 + 85, 0xffffff);
         super.render(context, mouseX, mouseY, partialTick);
     }
 

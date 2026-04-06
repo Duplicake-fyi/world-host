@@ -87,10 +87,10 @@ public class GioOriginChecker implements OriginChecker {
             try {
                 return action.apply(gioFile, info);
             } finally {
-                gio.g_object_unref(info);
+                Native.free(Pointer.nativeValue(info));
             }
         } finally {
-            gio.g_object_unref(gioFile);
+            Native.free(Pointer.nativeValue(gioFile));
         }
     }
 
@@ -104,7 +104,5 @@ public class GioOriginChecker implements OriginChecker {
         void g_file_info_set_attribute_string(Pointer info, String attribute, String attr_value);
 
         boolean g_file_set_attributes_from_info(Pointer file, Pointer info, int flags, Pointer cancellable, Pointer error);
-
-        void g_object_unref(Pointer object);
     }
 }

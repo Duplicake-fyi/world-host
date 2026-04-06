@@ -94,11 +94,11 @@ public final class UserListWidget
         //#endif
         int mouseX, int mouseY, float partialTick
     ) {
-        pose(context).pushMatrix();
+        pose(context).pushPose();
 
         //#if MC >= 1.21.4
         context.enableScissor(getX(), getY(), getX() + width, getY() + height);
-        pose(context).translate(0f, (float)-scrollAmount());
+        pose(context).translate(0, -scrollAmount(), 0);
         //#endif
 
         final int textYOffset = 10 - font.lineHeight / 2;
@@ -117,8 +117,11 @@ public final class UserListWidget
                     mouseX >= x + 24 && mouseX <= x + 24 + user.getMaxNameWidth() &&
                     mouseY >= y && mouseY <= y + 20
                 ) {
-                    // TODO: Update for 1.21.11 - tooltip rendering changed
-                    // Tooltips are rendered differently in 1.21.11
+                    //#if MC >= 1.20.1
+                    context.renderTooltip(font, unclippedName, mouseX, mouseY);
+                    //#else
+                    //$$ Minecraft.getInstance().screen.renderTooltip(context, unclippedName, mouseX, mouseY);
+                    //#endif
                 }
             } else {
                 WorldHostScreen.drawString(
@@ -127,7 +130,7 @@ public final class UserListWidget
             }
             y += 24;
         }
-        pose(context).popMatrix();
+        pose(context).popPose();
 
         for (final var button : actionButtons) {
             //#if MC >= 1.21.4
@@ -141,7 +144,7 @@ public final class UserListWidget
 
         //#if MC >= 1.21.4
         context.disableScissor();
-        renderScrollbar(context, mouseX, mouseY);
+        renderScrollbar(context);
         //#endif
     }
 

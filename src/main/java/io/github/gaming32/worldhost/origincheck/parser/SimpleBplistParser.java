@@ -1,7 +1,7 @@
 package io.github.gaming32.worldhost.origincheck.parser;
 
 import it.unimi.dsi.fastutil.bytes.Byte2LongFunction;
-import net.minecraft.util.Util;
+import net.minecraft.Util;
 
 import java.io.Serial;
 import java.net.MalformedURLException;
