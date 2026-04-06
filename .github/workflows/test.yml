@@ -21,8 +21,7 @@ jobs:
       - name: Cache Gradle stuff
         uses: actions/cache@v4
         with:
-          key: ${{ steps.cache_key.outputs.gradle_key }}-${{ hashFiles('*.gradle.kts', 'gradle.properties', 'gradle/**') }}
-          restore-keys: ${{ steps.cache_key.outputs.gradle_key }}-
+          key: ${{ steps.cache_key.outputs.gradle_key }}-${{ hashFiles('*.gradle.kts', 'gradle.properties', 'gradle/**', 'version.gradle.kts') }}
           path: |
             ~/.gradle/caches
             ~/.gradle/wrapper
