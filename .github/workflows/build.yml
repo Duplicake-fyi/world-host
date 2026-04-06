@@ -8,7 +8,7 @@ jobs:
       - uses: actions/checkout@v4
       - name: Get cache key
         id: cache_key
-        run: echo "gradle_key=gradle-v2-`cat versions/mainProject`-loom-1.14.473" >> $GITHUB_OUTPUT
+        run: echo "gradle_key=gradle-v2-`cat versions/mainProject`-loom-1.13.467" >> $GITHUB_OUTPUT
       - name: Cache Gradle stuff
         uses: actions/cache@v4
         with:
